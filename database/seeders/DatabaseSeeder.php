@@ -23,7 +23,10 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             ClusterSeeder::class,
-            FieldSeeder::class
+            FieldSeeder::class,
+            QuestionLevelSeeder::class,
+            QuestionSeeder::class,
+
         ]);
     }
 }
