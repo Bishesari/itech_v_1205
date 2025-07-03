@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('questions', function (Blueprint $table) {
             $table->id();
             $table->string('text'); // متن سوال
-            $table->foreignId('question_level_id');   // درجه سختی سوال
+            $table->foreignId('level_id');   // درجه سختی سوال
             $table->char('created', 19);
             $table->char('updated', 19)->nullable();
         });

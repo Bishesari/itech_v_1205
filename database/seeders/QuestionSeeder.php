@@ -32,12 +32,22 @@ class QuestionSeeder extends Seeder
                     ['text' => 'اتصال به پایگاه داده', 'created' => j_d_stamp_en()],
                 ],
             ],
+
+            [
+                'text' => 'آیا پایتون هنگام مواجه با شناسه های زبانی حساس به حروف بزرگ و کوچک است؟',
+                'options' => [
+                    ['text' => 'بله', 'is_correct' => true, 'created' => j_d_stamp_en()],
+                    ['text' => 'خیر', 'created' => j_d_stamp_en()],
+                    ['text' => 'بستگی به ماشین دارد.', 'created' => j_d_stamp_en()],
+                    ['text' => 'هیچکدام', 'created' => j_d_stamp_en()],
+                ],
+            ],
         ];
 
         foreach ($questions as $data) {
             $question = Question::create([
                 'text' => $data['text'],
-                'question_level_id'=> rand(1, 3),
+                'level_id'=> rand(1, 3),
                 'created' => j_d_stamp_en()
             ]);
 
