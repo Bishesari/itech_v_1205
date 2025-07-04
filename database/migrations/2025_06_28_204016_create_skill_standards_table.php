@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('skill_standards', function (Blueprint $table) {
             $table->id();
             $table->foreignId('field_id')->constrained('fields')->onDelete('cascade');
-            $table->string('code', 16)->unique();
+            $table->string('code', 15)->unique();
             $table->string('name_fa', 50);
             $table->string('name_en', 50);
             $table->string('abb', 25);
@@ -24,7 +24,7 @@ return new class extends Migration
             $table->decimal('project_h', 5, 1)->default(0);
             $table->decimal('sum_h', 6, 1)->default(0);
             $table->decimal('required_h', 6, 1)->default(0);
-            $table->boolean('active')->default(true);
+            $table->boolean('is_active')->default(true);
             $table->char('created', 19);
             $table->char('updated', 19)->nullable();
         });

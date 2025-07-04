@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('questions', function (Blueprint $table) {
+        Schema::create('mobile_user', function (Blueprint $table) {
             $table->id();
-            $table->string('text'); // متن سوال
-            $table->string('description')->nullable(); // توضیح پاسخ سوال
-            $table->foreignId('level_id');   // درجه سختی سوال
-            $table->foreignId('type_id');   // نوع سوال متنی یا عکس
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('mobile_id')->constrained()->cascadeOnDelete();
             $table->char('created', 19);
             $table->char('updated', 19)->nullable();
+
+            $table->unique(['user_id', 'mobile_id']);
         });
     }
 
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('questions');
+        Schema::dropIfExists('mobile_user');
     }
 };

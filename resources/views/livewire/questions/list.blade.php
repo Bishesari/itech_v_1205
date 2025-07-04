@@ -29,17 +29,19 @@ new class extends Component {
                 <div class="flex justify-between border-b p-1 text-gray-400">
                     <div>{{__('# ')}}{{$question->id}}</div>
                     <div>{{__('سختی : ')}}{{$question->level->title}}</div>
+                    <div>{{__('نوع : ')}}{{$question->type->title}}</div>
                     <div style="direction: ltr">{{__('Created:')}} {{$question->created}}</div>
                     @if($question->updated)
                         <div style="direction: ltr">{{__('Updated:')}} {{$question->updated}}</div>
                     @endif
                 </div>
                 <div class="border-b p-2 font-medium">{{__('- ')}}{{$question->text}}</div>
-                <div class="flex justify-around">
+                <div class="flex justify-around border-b">
                     @foreach($question->options as $option)
                         <div class="@if($option->is_correct) bg-green-100 italic @endif p-1 text-gray-700">{{$option->text}}</div>
                     @endforeach
                 </div>
+                <div class="p-2">{{__('توضیح: ')}}{{$question->description}}</div>
 
             </div>
         @endforeach

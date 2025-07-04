@@ -14,10 +14,10 @@ class ClusterSeeder extends Seeder
     public function run(): void
     {
         $clusters = [
-            ['title' => 'خدمات', 'created' => j_d_stamp_en()],
-            ['title' => 'صنعت', 'created' => j_d_stamp_en()],
-            ['title' => 'فرهنگ و هنر', 'created' => j_d_stamp_en()],
-            ['title' => 'کشاورزی', 'created' => j_d_stamp_en()],
+            ['title' => 'خدمات'],
+            ['title' => 'صنعت'],
+            ['title' => 'فرهنگ و هنر'],
+            ['title' => 'کشاورزی'],
         ];
         foreach ($clusters as $cluster) {
             Cluster::create($cluster);

@@ -13,9 +13,7 @@ return new class extends Migration
     {
         Schema::create('clusters', function (Blueprint $table) {
             $table->id();
-            $table->string('title', '25');
-            $table->char('created', 19);
-            $table->char('updated', 19)->nullable();
+            $table->string('title', '25'); // عنوان خوشه ها
         });
     }
 

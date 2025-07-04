@@ -16,6 +16,10 @@ class QuestionSeeder extends Seeder
         $questions = [
             [
                 'text' => 'کدام زبان برنامه‌نویسی سطح بالا و همه‌منظوره است؟',
+                'description' => 'زبان برنامه نویسی پایتون به دلیل شباهت به زبان انگلیسی سطح بالاست.',
+                'level_id' => 1,
+                'type_id' => 1,
+                'updated' => j_d_stamp_en(),
                 'options' => [
                     ['text' => 'HTML', 'created' => j_d_stamp_en()],
                     ['text' => 'CSS', 'created' => j_d_stamp_en()],
@@ -25,6 +29,10 @@ class QuestionSeeder extends Seeder
             ],
             [
                 'text' => 'خروجی دستور echo در PHP چیست؟',
+                'description' => 'در PHP خروجی چاپی با echo انجام می شود.',
+                'level_id' => 2,
+                'type_id' => 1,
+                'updated' => null,
                 'options' => [
                     ['text' => 'نمایش مقدار در مرورگر', 'is_correct' => true, 'created' => j_d_stamp_en()],
                     ['text' => 'تعریف متغیر', 'created' => j_d_stamp_en()],
@@ -35,6 +43,10 @@ class QuestionSeeder extends Seeder
 
             [
                 'text' => 'آیا پایتون هنگام مواجه با شناسه های زبانی حساس به حروف بزرگ و کوچک است؟',
+                'description' => 'پایتون نسبت به حروف بزرگ و کوچک در شناسه ها حساس است.',
+                'level_id' => 1,
+                'type_id' => 1,
+                'updated' => j_d_stamp_en(),
                 'options' => [
                     ['text' => 'بله', 'is_correct' => true, 'created' => j_d_stamp_en()],
                     ['text' => 'خیر', 'created' => j_d_stamp_en()],
@@ -47,8 +59,11 @@ class QuestionSeeder extends Seeder
         foreach ($questions as $data) {
             $question = Question::create([
                 'text' => $data['text'],
-                'level_id'=> rand(1, 3),
-                'created' => j_d_stamp_en()
+                'description' => $data['description'],
+                'level_id' => $data['level_id'],
+                'type_id' => $data['type_id'],
+                'created' => j_d_stamp_en(),
+                'updated' => $data['updated'],
             ]);
 
             foreach ($data['options'] as $option) {

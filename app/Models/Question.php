@@ -17,4 +17,8 @@ class Question extends Model
     {
         return $this->belongsTo(QuestionLevel::class, 'level_id');
     }
+    public function type():BelongsTo
+    {
+        return $this->belongsTo(QuestionType::class, 'type_id');
+    }
 }
