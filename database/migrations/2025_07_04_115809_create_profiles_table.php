@@ -13,7 +13,17 @@ return new class extends Migration
     {
         Schema::create('profiles', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->foreignId('user_id')->unique()->constrained()->onDelete('cascade');
+            $table->boolean('iranian')->default(true);
+            $table->string('n_code', 15);
+            $table->boolean('gender')->nullable();
+            $table->string('f_name_fa', 40)->nullable();
+            $table->string('l_name_fa', 50)->nullable();
+            $table->string('f_name_en', 40)->nullable();
+            $table->string('l_name_en', 50)->nullable();
+            $table->string('father', 40)->nullable();
+            $table->char('created', 19);
+            $table->char('updated', 19)->nullable();
         });
     }
 

@@ -20,6 +20,6 @@ class UserSeeder extends Seeder
         $user->profile()->create(['n_code' => '2063531218', 'f_name_fa' => 'یاسر', 'l_name_fa' => 'بیشه سری', 'created' => j_d_stamp_en()]);
         $mobile = Mobile::create(['mobile_nu' => '09177755924', 'verified'=> '1', 'created' => j_d_stamp_en()]);
         $user->mobiles()->attach($mobile['id'], ['created' => j_d_stamp_en()]);
-        $user->roles()->attach([ 1 => ['institute_id' => 1] ]);
+        //$user->roles()->attach([ 1 => ['institute_id' => 1] ]);
     }
 }

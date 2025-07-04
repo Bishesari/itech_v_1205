@@ -15,10 +15,10 @@ class QuestionSeeder extends Seeder
     {
         $questions = [
             [
-                'text' => 'کدام زبان برنامه‌نویسی سطح بالا و همه‌منظوره است؟',
-                'description' => 'زبان برنامه نویسی پایتون به دلیل شباهت به زبان انگلیسی سطح بالاست.',
                 'level_id' => 1,
                 'type_id' => 1,
+                'text' => 'کدام زبان برنامه‌نویسی سطح بالا و همه‌منظوره است؟',
+                'description' => 'زبان برنامه نویسی پایتون به دلیل شباهت به زبان انگلیسی سطح بالاست.',
                 'updated' => j_d_stamp_en(),
                 'options' => [
                     ['text' => 'HTML', 'created' => j_d_stamp_en()],
@@ -28,10 +28,10 @@ class QuestionSeeder extends Seeder
                 ],
             ],
             [
-                'text' => 'خروجی دستور echo در PHP چیست؟',
-                'description' => 'در PHP خروجی چاپی با echo انجام می شود.',
                 'level_id' => 2,
                 'type_id' => 1,
+                'text' => 'خروجی دستور echo در PHP چیست؟',
+                'description' => 'در PHP خروجی چاپی با echo انجام می شود.',
                 'updated' => null,
                 'options' => [
                     ['text' => 'نمایش مقدار در مرورگر', 'is_correct' => true, 'created' => j_d_stamp_en()],
@@ -42,10 +42,10 @@ class QuestionSeeder extends Seeder
             ],
 
             [
-                'text' => 'آیا پایتون هنگام مواجه با شناسه های زبانی حساس به حروف بزرگ و کوچک است؟',
-                'description' => 'پایتون نسبت به حروف بزرگ و کوچک در شناسه ها حساس است.',
                 'level_id' => 1,
                 'type_id' => 1,
+                'text' => 'آیا پایتون هنگام مواجه با شناسه های زبانی حساس به حروف بزرگ و کوچک است؟',
+                'description' => 'پایتون نسبت به حروف بزرگ و کوچک در شناسه ها حساس است.',
                 'updated' => j_d_stamp_en(),
                 'options' => [
                     ['text' => 'بله', 'is_correct' => true, 'created' => j_d_stamp_en()],
@@ -58,10 +58,10 @@ class QuestionSeeder extends Seeder
 
         foreach ($questions as $data) {
             $question = Question::create([
-                'text' => $data['text'],
-                'description' => $data['description'],
                 'level_id' => $data['level_id'],
                 'type_id' => $data['type_id'],
+                'text' => $data['text'],
+                'description' => $data['description'],
                 'created' => j_d_stamp_en(),
                 'updated' => $data['updated'],
             ]);

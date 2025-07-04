@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('questions', function (Blueprint $table) {
             $table->id();
-            $table->string('text'); // متن سوال
-            $table->string('description')->nullable(); // توضیح پاسخ سوال
             $table->foreignId('level_id');   // درجه سختی سوال
             $table->foreignId('type_id');   // نوع سوال متنی یا عکس
+            $table->string('text'); // متن سوال
+            $table->string('description')->nullable(); // توضیح پاسخ سوال
             $table->char('created', 19);
             $table->char('updated', 19)->nullable();
         });
