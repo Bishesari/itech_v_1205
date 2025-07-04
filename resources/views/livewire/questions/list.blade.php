@@ -14,27 +14,30 @@ new class extends Component {
 
     public function get_questions(): void
     {
-        $this->questions = Question::all();
+        $this->questions = Question::latest('id')->get();
     }
 
 }; ?>
 
 <div>
     <section class="w-full">
-        <div class="bg-zinc-200 dark:bg-zinc-600 dark:text-zinc-300 mx-auto py-3 max-w-[940px] relative">
-            <p class="font-semibold text-center">{{__('لیست سوالات')}}</p>
+        <div class="text-sm mx-auto py-1 max-w-[1000px] relative">
+            <p class="text-center">{{__('لیست سوالات')}}</p>
         </div>
         @foreach($questions as $question)
-            <div class="bg-zinc-100 mx-auto my-1 p-1 max-w-[940px]">
-                <div class="flex justify-around">
-                    <div>{{__('شناسه : ')}}{{$question->id}}</div>
-                    <div>{{__('درجه سختی : ')}}{{$question->level->title}}</div>
+            <div class="border border-gray-400 rounded text-xs mx-auto mb-4 max-w-[1000px]">
+                <div class="flex justify-between border-b p-1 text-gray-400">
+                    <div>{{__('# ')}}{{$question->id}}</div>
+                    <div>{{__('سختی : ')}}{{$question->level->title}}</div>
+                    <div style="direction: ltr">{{__('Created:')}} {{$question->created}}</div>
+                    @if($question->updated)
+                        <div style="direction: ltr">{{__('Updated:')}} {{$question->updated}}</div>
+                    @endif
                 </div>
-                <div>{{$question->text}}</div>
-                <div class="flex justify-around mt-2">
+                <div class="border-b p-2 font-medium">{{__('- ')}}{{$question->text}}</div>
+                <div class="flex justify-around">
                     @foreach($question->options as $option)
-
-                        <div class="@if($option->is_correct) text-green-600  @endif">{{$option->text}}</div>
+                        <div class="@if($option->is_correct) bg-green-100 italic @endif p-1 text-gray-700">{{$option->text}}</div>
                     @endforeach
                 </div>
 

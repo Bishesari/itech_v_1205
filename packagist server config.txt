@@ -1,0 +1,9 @@
+composer config -g repos.packagist composer https://mirrors.cloud.tencent.com/composer/
+
+
+composer clear-cache
+
+laravel new app
+
+
+composer config -g --unset repos.packagist
