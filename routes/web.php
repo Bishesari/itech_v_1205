@@ -22,3 +22,4 @@ Route::middleware(['auth'])->group(function () {
 require __DIR__.'/auth.php';
 
 Volt::route('questions', 'questions.list')->name('questions_list')->middleware('auth');
+Volt::route('roles', 'RoleManagement.roles')->name('roles')->middleware('auth');
