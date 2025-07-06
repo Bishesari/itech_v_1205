@@ -11,15 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('institutes', function (Blueprint $table) {
+        Schema::create('permission_role', function (Blueprint $table) {
             $table->id();
-            $table->string('short_name',25);
-            $table->string('full_name',80);
-            $table->char('abb',3);
-            $table->integer('remain_credit')->default(0);
-            $table->string('logo_url',200)->nullable();
+            $table->foreignId('permission_id');
+            $table->foreignId('role_id');
             $table->char('created', 19);
             $table->char('updated', 19)->nullable();
+            $table->unique(['permission_id', 'role_id'], 'unique_permission_role');
         });
     }
 
@@ -28,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('institutes');
+        Schema::dropIfExists('permission_role');
     }
 };

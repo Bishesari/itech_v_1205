@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class Role extends Model
+class Permission extends Model
 {
     public $timestamps = false;
-    public function permissions():BelongsToMany
+
+    public function roles():BelongsToMany
     {
-        return $this->belongsToMany(Permission::class);
+        return $this->belongsToMany(Role::class);
     }
 }
