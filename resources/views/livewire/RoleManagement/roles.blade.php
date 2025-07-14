@@ -2,60 +2,78 @@
 
 use App\Models\Role;
 use Illuminate\Database\Eloquent\Collection;
+use Livewire\Attributes\Computed;
 use Livewire\Volt\Component;
 
 new class extends Component {
-    public Collection $roles;
+    use \Livewire\WithPagination;
 
-    public function mount(): void
+    public $sortBy = 'id';
+    public $sortDirection = 'desc';
+
+    public function sort($column)
     {
-        $this->get_roles();
+        if ($this->sortBy === $column) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortBy = $column;
+            $this->sortDirection = 'asc';
+        }
     }
 
-    public function get_roles(): void
+    #[Computed]
+    public function roles()
     {
-        $this->roles = Role::all();
+        return Role::query()
+            ->tap(fn($query) => $this->sortBy ? $query->orderBy($this->sortBy, $this->sortDirection) : $query)
+            ->paginate(10);
     }
+
 
 }; ?>
 
 <div>
-    <section class="w-full">
-        <div class="text-sm mx-auto py-1 max-w-[1000px] relative">
-            <p class="text-center font-semibold text-gray-600">{{__('نقشهای کاربری')}}</p>
-        </div>
-        <table class="mx-auto text-xs text-gray-500 text-center font-semibold">
-            <tr class="h-10 text-xs text-gray-600">
-                <th class="border w-16 ">{{__('#')}}</th>
-                <th class="border w-40 ">{{__('عنوان فارسی')}}</th>
-                <th class="border w-40 ">{{__('عنوان لاتین')}}</th>
-                <th class="border w-20 ">{{__('تعداد مجوزها')}}</th>
-                <th class="border w-20 ">{{__('زمان ثبت')}}</th>
-                <th class="border w-20 ">{{__('زمان ویرایش')}}</th>
-                <th class="border w-20 ">{{__('عملیات')}}</th>
+    <flux:table :paginate="$this->roles">
+        <flux:table.columns>
+            <flux:table.column sortable :sorted="$sortBy === 'id'" :direction="$sortDirection"
+                               wire:click="sort('id')">{{__('#')}}</flux:table.column>
+            <flux:table.column sortable :sorted="$sortBy === 'name_fa'" :direction="$sortDirection"
+                               wire:click="sort('name_fa')">{{__('عنوان فارسی')}}</flux:table.column>
+            <flux:table.column sortable :sorted="$sortBy === 'name_en'" :direction="$sortDirection"
+                               wire:click="sort('name_en')">{{__('عنوان لاتین')}}</flux:table.column>
+            <flux:table.column class="w-20 text-center" sortable :sorted="$sortBy === 'created'" :direction="$sortDirection"
+                               wire:click="sort('created')">{{__('زمان ثبت')}}
+            </flux:table.column>
 
-            </tr>
-            @foreach($roles as $role)
-                <tr class="hover:bg-sky-50 hover:text-sky-700">
-                    <td class="border">{{$role['id']}}</td>
-                    <td class="border">{{$role['name_fa']}}</td>
-                    <td class="border">{{$role['name_en']}}</td>
-                    <td class="border">{{$role->permissions->count()}}</td>
+            <flux:table.column sortable :sorted="$sortBy === 'updated'" :direction="$sortDirection"
+                               wire:click="sort('updated')">{{__('زمان ویرایش')}}</flux:table.column>
+        </flux:table.columns>
 
-                    <td class="border pt-2 pb-1 px-2" style="direction: ltr">
+        <flux:table.rows>
+            @foreach ($this->roles as $role)
+                <flux:table.row :key="$role->id">
+                    <flux:table.cell class="whitespace-nowrap">{{ $role->id }}</flux:table.cell>
+                    <flux:table.cell class="whitespace-nowrap">{{ $role->name_fa }}</flux:table.cell>
+                    <flux:table.cell class="whitespace-nowrap">{{ $role->name_en }}</flux:table.cell>
+                    <flux:table.cell class="whitespace-nowrap text-center">
                         {{substr($role['created'], 0, 10)}}
                         <hr>
                         {{substr($role['created'], 11, 5)}}
-                    </td>
-                    <td class="border pt-2 pb-1 px-2" style="direction: ltr">
-                        {{substr($role['updated'], 0, 10)}}
-                        @if($role['updated']) <hr> @endif
-                        {{substr($role['updated'], 11, 5)}}
-                    </td>
-                </tr>
+
+                    </flux:table.cell>
+                    <flux:table.cell class="whitespace-nowrap">{{ $role->updated }}</flux:table.cell>
+
+
+                    <flux:table.cell variant="strong">{{ $role->amount }}</flux:table.cell>
+
+                    <flux:table.cell>
+                        <flux:button variant="ghost" size="sm" icon="ellipsis-horizontal"
+                                     inset="top bottom"></flux:button>
+                    </flux:table.cell>
+                </flux:table.row>
             @endforeach
-
-        </table>
-
-    </section>
+        </flux:table.rows>
+    </flux:table>
 </div>
+
+
