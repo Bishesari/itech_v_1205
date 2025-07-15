@@ -1,8 +1,11 @@
 <?php
 
 use App\Models\Role;
+use Flux\Flux;
+
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Validate;
 use Livewire\Volt\Component;
 use Livewire\WithPagination;
 
@@ -29,7 +32,48 @@ new class extends Component {
         return Role::query()
             ->tap(fn($query) => $this->sortBy ? $query->orderBy($this->sortBy, $this->sortDirection) : $query)
             ->paginate(10);
+
     }
+
+    #[On('role-created')]
+    public function reset_page()
+    {
+        $this->resetPage();
+    }
+
+
+    #[Validate('required|unique:roles|min:2')]
+    public string $name_fa = '';
+    #[Validate('required|unique:roles|min:3')]
+    public string $name_en = '';
+
+    public int $editing_id = 0;
+
+    public function edit(Role $role): void
+    {
+        $this->editing_id = $role['id'];
+        $this->name_fa = $role['name_fa'];
+        $this->name_en = $role['name_en'];
+        $this->modal('edit-role')->show();
+    }
+
+    public function update()
+    {
+        $this->validate();
+        $editing_role = Role::find($this->editing_id);
+        $editing_role->update([
+            'name_fa' => $this->name_fa,
+            'name_en' => $this->name_en,
+            'updated' => j_d_stamp_en()
+        ]);
+        $this->modal('edit-role')->close();
+        Flux::toast(
+            heading: 'انجام شد.',
+            text: 'نقش کاربری با موفقیت ویرایش شد.',
+            variant: 'success'
+        );
+    }
+
 
 
 }; ?>
@@ -68,7 +112,12 @@ new class extends Component {
 
         <flux:table.rows>
             @foreach ($this->roles as $role)
-                <flux:table.row class="hover:bg-green-50" :key="$role->id">
+                @php($ed = '')
+                @if($role->id == $editing_id)
+                    @php($ed = 'bg-amber-100')
+                @endif
+
+                <flux:table.row class="hover:bg-green-50 {{$ed}}" :key="$role->id">
                     <flux:table.cell class="whitespace-nowrap">{{ $role->id }}</flux:table.cell>
                     <flux:table.cell class="whitespace-nowrap">{{ $role->name_fa }}</flux:table.cell>
                     <flux:table.cell class="whitespace-nowrap">{{ $role->name_en }}</flux:table.cell>
@@ -87,14 +136,40 @@ new class extends Component {
                     </flux:table.cell>
 
                     <flux:table.cell>
-                        <flux:button variant="ghost" size="sm" class="cursor-pointer">
+
+                        <flux:button wire:click="edit({{$role}})" variant="ghost" size="sm" class="cursor-pointer">
                             <flux:icon.pencil-square variant="solid" class="text-amber-500 dark:text-amber-300 size-5"/>
                         </flux:button>
+
+
                     </flux:table.cell>
                 </flux:table.row>
             @endforeach
         </flux:table.rows>
     </flux:table>
+
+
+    <flux:modal name="edit-role" :show="$errors->isNotEmpty()" focusable class="w-80 md:w-96" :dismissible="false">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">{{ __('فرم ویرایش نقش') }}</flux:heading>
+                <flux:text class="mt-2">{{ __('توجه کنید این نقش را قبلا تعریف نکرده باشید.') }}</flux:text>
+            </div>
+            <form wire:submit="update" class="flex flex-col gap-6">
+                <flux:input wire:model="name_fa" :label="__('عنوان فارسی')" type="text" class:input="text-center"
+                            maxlength="35" required autofocus/>
+                <flux:input wire:model="name_en" :label="__('عنوان لاتین')" type="text" class:input="text-center"
+                            maxlength="35" required/>
+                <div class="flex justify-between space-x-2 rtl:space-x-reverse flex-row-reverse">
+                    <flux:button variant="primary" color="orange" type="submit"
+                                 class="cursor-pointer">{{ __('ویرایش') }}</flux:button>
+                    <flux:modal.close>
+                        <flux:button variant="filled" class="cursor-pointer">{{ __('انصراف') }}</flux:button>
+                    </flux:modal.close>
+                </div>
+            </form>
+        </div>
+    </flux:modal>
 </div>
 
 

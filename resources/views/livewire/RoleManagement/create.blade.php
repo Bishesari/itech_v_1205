@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Role;
+use Flux\Flux;
 use Livewire\Attributes\Validate;
 use Livewire\Volt\Component;
 
@@ -22,6 +23,11 @@ new class extends Component {
         $this->modal('create_role')->close();
         $this->dispatch('role-created');
         $this->reset();
+        Flux::toast(
+            heading: 'انجام شد.',
+            text: 'نقش کاربری جدیدی افزوده شد.',
+            variant: 'success'
+        );
     }
 
 
@@ -47,13 +53,13 @@ new class extends Component {
                 <flux:input wire:model="name_en" :label="__('عنوان لاتین')" type="text" class:input="text-center"
                             maxlength="35" required/>
 
-            <div class="flex justify-between space-x-2 rtl:space-x-reverse flex-row-reverse">
-                <flux:button variant="primary" color="green" type="submit"
-                             class="cursor-pointer">{{ __('ثبت') }}</flux:button>
-                <flux:modal.close>
-                    <flux:button variant="filled" class="cursor-pointer">{{ __('انصراف') }}</flux:button>
-                </flux:modal.close>
-            </div>
+                <div class="flex justify-between space-x-2 rtl:space-x-reverse flex-row-reverse">
+                    <flux:button variant="primary" color="green" type="submit"
+                                 class="cursor-pointer">{{ __('ثبت') }}</flux:button>
+                    <flux:modal.close>
+                        <flux:button variant="filled" class="cursor-pointer">{{ __('انصراف') }}</flux:button>
+                    </flux:modal.close>
+                </div>
             </form>
         </div>
     </flux:modal>
