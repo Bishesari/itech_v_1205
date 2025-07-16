@@ -41,10 +41,7 @@ new class extends Component {
         $this->resetPage();
     }
 
-
-    #[Validate('required|unique:roles|min:2')]
     public string $name_fa = '';
-    #[Validate('required|unique:roles|min:3')]
     public string $name_en = '';
 
     public int $editing_id = 0;
@@ -59,19 +56,43 @@ new class extends Component {
 
     public function update()
     {
-        $this->validate();
         $editing_role = Role::find($this->editing_id);
-        $editing_role->update([
-            'name_fa' => $this->name_fa,
-            'name_en' => $this->name_en,
-            'updated' => j_d_stamp_en()
-        ]);
+
+        if ( ($editing_role['name_fa'] != $this->name_fa) and ($editing_role['name_en'] != $this->name_en) ){
+            $validated = $this->validate([
+                'name_fa' => 'required|unique:roles|min:2',
+                'name_en' => 'required|unique:roles|min:3',
+            ]);
+            $validated['updated'] = j_d_stamp_en();
+            $editing_role->update($validated);
+        }
+        elseif ( ($editing_role['name_fa'] != $this->name_fa) and ($editing_role['name_en'] == $this->name_en) ){
+            $validated = $this->validate([
+                'name_fa' => 'required|unique:roles|min:2',
+                'name_en' => 'required|min:3',
+            ]);
+            $validated['updated'] = j_d_stamp_en();
+            $editing_role->update($validated);
+        }
+        elseif ( ($editing_role['name_fa'] == $this->name_fa) and ($editing_role['name_en'] != $this->name_en) ){
+            $validated = $this->validate([
+                'name_fa' => 'required|min:2',
+                'name_en' => 'required|unique:roles|min:3',
+            ]);
+            $validated['updated'] = j_d_stamp_en();
+            $editing_role->update($validated);
+        }
         $this->modal('edit-role')->close();
         Flux::toast(
             heading: 'انجام شد.',
             text: 'نقش کاربری با موفقیت ویرایش شد.',
             variant: 'success'
         );
+    }
+
+    public function reset_edit()
+    {
+        $this->editing_id = 0;
     }
 
 
@@ -148,8 +169,8 @@ new class extends Component {
         </flux:table.rows>
     </flux:table>
 
-
-    <flux:modal name="edit-role" :show="$errors->isNotEmpty()" focusable class="w-80 md:w-96" :dismissible="false">
+    <!-- Edit Modal -->
+    <flux:modal @close="reset_edit" name="edit-role" :show="$errors->isNotEmpty()" focusable class="w-80 md:w-96" :dismissible="false">
         <div class="space-y-6">
             <div>
                 <flux:heading size="lg">{{ __('فرم ویرایش نقش') }}</flux:heading>
