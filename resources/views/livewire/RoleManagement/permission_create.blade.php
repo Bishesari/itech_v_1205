@@ -20,8 +20,8 @@ new class extends Component {
             'name_en' => $this->name_en,
             'created' => j_d_stamp_en()
         ]);
-        $this->modal('create_role')->close();
-        $this->dispatch('role-created');
+        $this->modal('create_permission')->close();
+        $this->dispatch('permission-created');
         $this->reset();
         Flux::toast(
             heading: 'انجام شد.',
