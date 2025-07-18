@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Permission;
 use App\Models\Role;
 use Flux\Flux;
 
@@ -26,16 +27,16 @@ new class extends Component {
     }
 
     #[Computed]
-    #[On('role-created')]
-    public function roles()
+    #[On('permission-created')]
+    public function permissions()
     {
-        return Role::query()
+        return Permission::query()
             ->tap(fn($query) => $this->sortBy ? $query->orderBy($this->sortBy, $this->sortDirection) : $query)
             ->paginate(10);
 
     }
 
-    #[On('role-created')]
+    #[On('permission-created')]
     public function reset_page(): void
     {
         $this->resetPage();
@@ -46,65 +47,62 @@ new class extends Component {
 
     public int $editing_id = 0;
 
-    public function edit(Role $role): void
+    public function edit(Permission $permission): void
     {
-        $this->editing_id = $role['id'];
-        $this->name_fa = $role['name_fa'];
-        $this->name_en = $role['name_en'];
-        $this->modal('edit-role')->show();
+        $this->editing_id = $permission['id'];
+        $this->name_fa = $permission['name_fa'];
+        $this->name_en = $permission['name_en'];
+        $this->modal('edit-permission')->show();
     }
 
     public function update(): void
     {
-        $editing_role = Role::find($this->editing_id);
+        $editing_permission = Permission::find($this->editing_id);
 
-        if ( ($editing_role['name_fa'] != $this->name_fa) and ($editing_role['name_en'] != $this->name_en) ){
+        if (($editing_permission['name_fa'] != $this->name_fa) and ($editing_permission['name_en'] != $this->name_en)) {
             $validated = $this->validate([
                 'name_fa' => 'required|unique:roles|min:2',
                 'name_en' => 'required|unique:roles|min:3',
             ]);
             $validated['updated'] = j_d_stamp_en();
-            $editing_role->update($validated);
-        }
-        elseif ( ($editing_role['name_fa'] != $this->name_fa) and ($editing_role['name_en'] == $this->name_en) ){
+            $editing_permission->update($validated);
+        } elseif (($editing_permission['name_fa'] != $this->name_fa) and ($editing_permission['name_en'] == $this->name_en)) {
             $validated = $this->validate([
                 'name_fa' => 'required|unique:roles|min:2',
                 'name_en' => 'required|min:3',
             ]);
             $validated['updated'] = j_d_stamp_en();
-            $editing_role->update($validated);
-        }
-        elseif ( ($editing_role['name_fa'] == $this->name_fa) and ($editing_role['name_en'] != $this->name_en) ){
+            $editing_permission->update($validated);
+        } elseif (($editing_permission['name_fa'] == $this->name_fa) and ($editing_permission['name_en'] != $this->name_en)) {
             $validated = $this->validate([
                 'name_fa' => 'required|min:2',
                 'name_en' => 'required|unique:roles|min:3',
             ]);
             $validated['updated'] = j_d_stamp_en();
-            $editing_role->update($validated);
+            $editing_permission->update($validated);
         }
-        $this->modal('edit-role')->close();
+        $this->modal('edit-permission')->close();
         Flux::toast(
             heading: 'انجام شد.',
-            text: 'نقش کاربری با موفقیت ویرایش شد.',
+            text: 'مجوز با موفقیت ویرایش شد.',
             variant: 'success'
         );
     }
 
-    public function reset_edit(): void
+    public function reset_edit()
     {
         $this->editing_id = 0;
     }
-
 
 
 }; ?>
 
 <div>
     <div class="bg-zinc-100 dark:bg-zinc-600 dark:text-zinc-300 py-3 relative">
-        <p class="font-semibold text-center">{{__('لیست نقشهای کاربری')}}</p>
-        <livewire:RoleManagement.role_create/>
+        <p class="font-semibold text-center">{{__('لیست مجوزها')}}</p>
+        <livewire:RoleManagement.permission_create/>
     </div>
-    <flux:table :paginate="$this->roles" class="text-center">
+    <flux:table :paginate="$this->permissions" class="text-center">
         <flux:table.columns>
             <flux:table.column align="center" sortable :sorted="$sortBy === 'id'" :direction="$sortDirection"
                                wire:click="sort('id')">
@@ -134,33 +132,33 @@ new class extends Component {
         </flux:table.columns>
 
         <flux:table.rows>
-            @foreach ($this->roles as $role)
+            @foreach ($this->permissions as $permission)
                 @php($ed = '')
-                @if($role->id == $editing_id)
-                    @php($ed = 'bg-amber-100')
+                @if($permission->id == $editing_id)
+                    @php($ed = 'bg-amber-50')
                 @endif
 
-                <flux:table.row class="hover:bg-green-50 {{$ed}}" :key="$role->id">
-                    <flux:table.cell class="whitespace-nowrap">{{ $role->id }}</flux:table.cell>
-                    <flux:table.cell class="whitespace-nowrap">{{ $role->name_fa }}</flux:table.cell>
-                    <flux:table.cell class="whitespace-nowrap">{{ $role->name_en }}</flux:table.cell>
+                <flux:table.row class="hover:bg-green-50 {{$ed}}" :key="$permission->id">
+                    <flux:table.cell class="whitespace-nowrap">{{ $permission->id }}</flux:table.cell>
+                    <flux:table.cell class="whitespace-nowrap">{{ $permission->name_fa }}</flux:table.cell>
+                    <flux:table.cell class="whitespace-nowrap">{{ $permission->name_en }}</flux:table.cell>
                     <flux:table.cell class="whitespace-nowrap">
-                        {{substr($role['created'], 0, 10)}}
+                        {{substr($permission['created'], 0, 10)}}
                         <hr>
-                        {{substr($role['created'], 11, 5)}}
+                        {{substr($permission['created'], 11, 5)}}
 
                     </flux:table.cell>
                     <flux:table.cell class="whitespace-nowrap">
-                        {{substr($role['updated'], 0, 10)}}
-                        @if($role['updated'])
+                        {{substr($permission['updated'], 0, 10)}}
+                        @if($permission['updated'])
                             <hr>
                         @endif
-                        {{substr($role['updated'], 11, 5)}}
+                        {{substr($permission['updated'], 11, 5)}}
                     </flux:table.cell>
 
                     <flux:table.cell>
 
-                        <flux:button wire:click="edit({{$role}})" variant="ghost" size="sm" class="cursor-pointer">
+                        <flux:button wire:click="edit({{$permission}})" variant="ghost" size="sm" class="cursor-pointer">
                             <flux:icon.pencil-square variant="solid" class="text-amber-500 dark:text-amber-300 size-5"/>
                         </flux:button>
 
@@ -172,11 +170,12 @@ new class extends Component {
     </flux:table>
 
     <!-- Edit Modal -->
-    <flux:modal @close="reset_edit" name="edit-role" :show="$errors->isNotEmpty()" focusable class="w-80 md:w-96" :dismissible="false">
+    <flux:modal @close="reset_edit" name="edit-permission" :show="$errors->isNotEmpty()" focusable class="w-80 md:w-96"
+                :dismissible="false">
         <div class="space-y-6">
             <div>
-                <flux:heading size="lg">{{ __('فرم ویرایش نقش') }}</flux:heading>
-                <flux:text class="mt-2">{{ __('توجه کنید این نقش را قبلا تعریف نکرده باشید.') }}</flux:text>
+                <flux:heading size="lg">{{ __('فرم ویرایش مجوز') }}</flux:heading>
+                <flux:text class="mt-2">{{ __('توجه کنید این مجوز را قبلا تعریف نکرده باشید.') }}</flux:text>
             </div>
             <form wire:submit="update" class="flex flex-col gap-6">
                 <flux:input wire:model="name_fa" :label="__('عنوان فارسی')" type="text" class:input="text-center"

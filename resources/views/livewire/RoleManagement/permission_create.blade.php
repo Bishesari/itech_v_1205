@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Role;
+use App\Models\Permission;
 use Flux\Flux;
 use Livewire\Attributes\Validate;
 use Livewire\Volt\Component;
@@ -12,10 +12,10 @@ new class extends Component {
     #[Validate('required|unique:roles|min:3')]
     public string $name_en = '';
 
-    public function create_role(): void
+    public function create(): void
     {
         $this->validate();
-        Role::create([
+        Permission::create([
             'name_fa' => $this->name_fa,
             'name_en' => $this->name_en,
             'created' => j_d_stamp_en()
@@ -25,7 +25,7 @@ new class extends Component {
         $this->reset();
         Flux::toast(
             heading: 'انجام شد.',
-            text: 'نقش کاربری جدیدی افزوده شد.',
+            text: 'مجوز جدیدی افزوده شد.',
             variant: 'success'
         );
     }
@@ -34,24 +34,24 @@ new class extends Component {
 }; ?>
 
 <section class="absolute left-1 top-2">
-    <flux:modal.trigger name="create_role">
-        <flux:button x-on:click.prevent="$dispatch('open-modal', 'create_role')" variant="ghost" size="sm"
+    <flux:modal.trigger name="create_permission">
+        <flux:button x-on:click.prevent="$dispatch('open-modal', 'create_permission')" variant="ghost" size="sm"
                      class="cursor-pointer">
             <flux:icon.plus-circle class="text-green-500"/>
         </flux:button>
     </flux:modal.trigger>
 
-    <flux:modal name="create_role" :show="$errors->isNotEmpty()" focusable class="w-80 md:w-96" :dismissible="false">
+    <flux:modal name="create_permission" :show="$errors->isNotEmpty()" focusable class="w-80 md:w-96" :dismissible="false">
         <div class="space-y-6">
             <div>
-                <flux:heading size="lg">{{ __('درج نقش جدید') }}</flux:heading>
-                <flux:text class="mt-2">{{ __('توجه کنید این نقش را قبلا تعریف نکرده باشید.') }}</flux:text>
+                <flux:heading size="lg" class="text-blue-500">{{ __('درج مجوز جدید') }}</flux:heading>
+                <flux:text class="mt-2 text-blue-400">{{ __('توجه کنید این مجوز را قبلا تعریف نکرده باشید.') }}</flux:text>
             </div>
-            <form wire:submit="create_role" class="flex flex-col gap-6">
+            <form wire:submit="create" class="flex flex-col gap-6">
                 <flux:input wire:model="name_fa" :label="__('عنوان فارسی')" type="text" class:input="text-center"
                             maxlength="35" required autofocus/>
                 <flux:input wire:model="name_en" :label="__('عنوان لاتین')" type="text" class:input="text-center"
-                            maxlength="35" required/>
+                            maxlength="35" required style="direction:ltr"/>
 
                 <div class="flex justify-between space-x-2 rtl:space-x-reverse flex-row-reverse">
                     <flux:button variant="primary" color="green" type="submit"

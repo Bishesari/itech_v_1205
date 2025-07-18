@@ -15,8 +15,9 @@
                 <flux:navlist.group :heading="__('سکوی توسعه')" class="grid" expandable :expanded="request()->routeIs('dashboard')" >
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('داشبرد') }}</flux:navlist.item>
                 </flux:navlist.group>
-                <flux:navlist.group :heading="__('اطلاعات پایه')" class="grid" expandable :expanded="request()->routeIs(['roles'])" >
+                <flux:navlist.group :heading="__('اطلاعات پایه')" class="grid" expandable :expanded="request()->routeIs(['roles', 'permissions'])" >
                     <flux:navlist.item icon="user-group" :href="route('roles')" :current="request()->routeIs('roles')" wire:navigate>{{ __('نقشهای کاربری') }}</flux:navlist.item>
+                    <flux:navlist.item icon="user-group" :href="route('permissions')" :current="request()->routeIs('permissions')" wire:navigate>{{ __('مجوزها') }}</flux:navlist.item>
 
 
 
