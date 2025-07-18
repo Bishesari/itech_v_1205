@@ -163,7 +163,10 @@ new class extends Component {
                         <flux:button wire:click="edit({{$role}})" variant="ghost" size="sm" class="cursor-pointer">
                             <flux:icon.pencil-square variant="solid" class="text-amber-500 dark:text-amber-300 size-5"/>
                         </flux:button>
-
+                        <flux:button href="{{URL::signedRoute('show_role', ['role'=>$role->id])}}" variant="ghost"
+                                     size="sm" class="cursor-pointer" wire:navigate>
+                            <flux:icon.eye class="text-blue-500 size-5"/>
+                        </flux:button>
 
                     </flux:table.cell>
                 </flux:table.row>
