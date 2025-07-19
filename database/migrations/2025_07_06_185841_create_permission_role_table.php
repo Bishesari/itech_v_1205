@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignId('permission_id');
             $table->foreignId('role_id');
             $table->char('created', 19);
-            $table->char('updated', 19)->nullable();
             $table->unique(['permission_id', 'role_id'], 'unique_permission_role');
         });
     }

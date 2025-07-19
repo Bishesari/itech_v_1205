@@ -12,21 +12,38 @@ new class extends Component {
 
     public Collection $permissions;
 
+    public array $rolePermissionsIds;
+
     public function mount()
     {
         $this->get_permissions();
+        $this->get_role_permissions_ids();
 
     }
 
-    public function get_permissions()
+    public function get_permissions(): void
     {
         $this->permissions = Permission::all();
     }
-    public function update($permission_id)
+
+    public function get_role_permissions_ids(): void
     {
-
-
+        $this->rolePermissionsIds =  $this->role->permissions->pluck('id')->toArray();
     }
+
+    public function togglePermission($permissionId): void
+    {
+        $permission = Permission::findOrFail($permissionId);
+        if (in_array($permissionId, $this->rolePermissionsIds)) {
+            $this->role->permissions()->detach($permission);
+        } else {
+            $this->role->permissions()->attach($permission, [
+                'created' => j_d_stamp_en(),
+            ]);
+        }
+        $this->get_role_permissions_ids();
+    }
+
 
 
 
@@ -36,27 +53,31 @@ new class extends Component {
     <div class="bg-zinc-100 dark:bg-zinc-600 dark:text-zinc-300 py-3 relative">
         <p class="font-semibold text-center">{{__('جزئیات نقش کاربری:')}} ( {{$role['name_fa']}}، {{$role['name_en']}}
             )</p>
-        {{--        <livewire:RoleManagement.role_create/>--}}
+        <section class="absolute left-1 top-2">
+            <flux:button href="{{route('roles')}}" variant="ghost" size="sm" class="cursor-pointer" wire:navigate>
+                <flux:icon.arrow-up-circle class="text-blue-500 size-6"/>
+            </flux:button>
+        </section>
+
     </div>
 
     <flux:checkbox.group wire:model="Subscription" label="Subscription preferences" variant="cards" class="max-sm:flex-col">
         @foreach($permissions as $permission)
 
-            @if($role->permissions->contains('id', $permission->id))
-                <flux:checkbox wire:click="update({{$permission->id}})"
+            @if(in_array($permission->id, $rolePermissionsIds))
+                <flux:checkbox wire:click="togglePermission({{$permission->id}})"
                     value="{{$permission->id}}"
                     label="{{$permission->name_fa}}"
                     description="Learn about new features and products."
                     checked
                 />
             @else
-                <flux:checkbox wire:click="update({{$permission->id}})"
+                <flux:checkbox wire:click="togglePermission({{$permission->id}})"
                     value="{{$permission->id}}"
                     label="{{$permission->name_fa}}"
                     description="Learn about new features and products."
                 />
             @endif
-
 
         @endforeach
     </flux:checkbox.group>
