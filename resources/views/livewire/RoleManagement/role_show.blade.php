@@ -65,14 +65,14 @@ new class extends Component {
         @foreach($permissions as $permission)
 
             @if(in_array($permission->id, $rolePermissionsIds))
-                <flux:checkbox wire:click="togglePermission({{$permission->id}})"
+                <flux:checkbox wire:click="togglePermission({{$permission->id}})" class="min-w-36 m-2"
                     value="{{$permission->id}}"
                     label="{{$permission->name_fa}}"
                     description="Learn about new features and products."
                     checked
                 />
             @else
-                <flux:checkbox wire:click="togglePermission({{$permission->id}})"
+                <flux:checkbox wire:click="togglePermission({{$permission->id}})" class="min-w-36 m-2"
                     value="{{$permission->id}}"
                     label="{{$permission->name_fa}}"
                     description="Learn about new features and products."

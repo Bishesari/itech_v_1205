@@ -161,6 +161,10 @@ new class extends Component {
                         <flux:button wire:click="edit({{$permission}})" variant="ghost" size="sm" class="cursor-pointer">
                             <flux:icon.pencil-square variant="solid" class="text-amber-500 dark:text-amber-300 size-5"/>
                         </flux:button>
+                        <flux:button href="{{URL::signedRoute('show_permission', ['permission'=>$permission->id])}}" variant="ghost"
+                                     size="sm" class="cursor-pointer" wire:navigate>
+                            <flux:icon.eye class="text-blue-500 size-5"/>
+                        </flux:button>
 
 
                     </flux:table.cell>
@@ -170,7 +174,7 @@ new class extends Component {
     </flux:table>
 
     <!-- Edit Modal -->
-    <flux:modal @close="reset_edit" name="edit-permission" :show="$errors->isNotEmpty()" focusable class="w-80 md:w-96"
+    <flux:modal @close="reset_edit" variant="flyout" position="left" name="edit-permission" :show="$errors->isNotEmpty()" focusable class="w-80 md:w-96"
                 :dismissible="false">
         <div class="space-y-6">
             <div>

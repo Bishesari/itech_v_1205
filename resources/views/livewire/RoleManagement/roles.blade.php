@@ -175,7 +175,7 @@ new class extends Component {
     </flux:table>
 
     <!-- Edit Modal -->
-    <flux:modal @close="reset_edit" name="edit-role" :show="$errors->isNotEmpty()" focusable class="w-80 md:w-96" :dismissible="false">
+    <flux:modal @close="reset_edit" variant="flyout" position="left" name="edit-role" :show="$errors->isNotEmpty()" focusable class="w-80 md:w-96" :dismissible="false">
         <div class="space-y-6">
             <div>
                 <flux:heading size="lg">{{ __('فرم ویرایش نقش') }}</flux:heading>
