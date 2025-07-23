@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Institute;
 use App\Models\Role;
 use Flux\Flux;
 
@@ -26,16 +27,16 @@ new class extends Component {
     }
 
     #[Computed]
-    #[On('role-created')]
-    public function roles()
+    #[On('Institute-created')]
+    public function institutes()
     {
-        return Role::query()
+        return Institute::query()
             ->tap(fn($query) => $this->sortBy ? $query->orderBy($this->sortBy, $this->sortDirection) : $query)
             ->paginate(10);
 
     }
 
-    #[On('role-created')]
+    #[On('Institute-created')]
     public function reset_page(): void
     {
         $this->resetPage();
@@ -46,41 +47,39 @@ new class extends Component {
 
     public int $editing_id = 0;
 
-    public function edit(Role $role): void
+    public function edit(Institute $institute): void
     {
-        $this->editing_id = $role['id'];
-        $this->name_fa = $role['name_fa'];
-        $this->name_en = $role['name_en'];
-        $this->modal('edit-role')->show();
+        $this->editing_id = $institute['id'];
+        $this->name_fa = $institute['name_fa'];
+        $this->name_en = $institute['name_en'];
+        $this->modal('edit-institute')->show();
     }
 
     public function update(): void
     {
-        $editing_role = Role::find($this->editing_id);
+        $editing_institute = Institute::find($this->editing_id);
 
-        if ( ($editing_role['name_fa'] != $this->name_fa) and ($editing_role['name_en'] != $this->name_en) ){
+        if (($editing_institute['name_fa'] != $this->name_fa) and ($editing_institute['name_en'] != $this->name_en)) {
             $validated = $this->validate([
-                'name_fa' => 'required|unique:roles|min:2',
-                'name_en' => 'required|unique:roles|min:3',
+                'name_fa' => 'required|unique:role|min:2',
+                'name_en' => 'required|unique:role|min:3',
             ]);
             $validated['updated'] = j_d_stamp_en();
-            $editing_role->update($validated);
-        }
-        elseif ( ($editing_role['name_fa'] != $this->name_fa) and ($editing_role['name_en'] == $this->name_en) ){
+            $editing_institute->update($validated);
+        } elseif (($editing_institute['name_fa'] != $this->name_fa) and ($editing_institute['name_en'] == $this->name_en)) {
             $validated = $this->validate([
-                'name_fa' => 'required|unique:roles|min:2',
+                'name_fa' => 'required|unique:role|min:2',
                 'name_en' => 'required|min:3',
             ]);
             $validated['updated'] = j_d_stamp_en();
-            $editing_role->update($validated);
-        }
-        elseif ( ($editing_role['name_fa'] == $this->name_fa) and ($editing_role['name_en'] != $this->name_en) ){
+            $editing_institute->update($validated);
+        } elseif (($editing_institute['name_fa'] == $this->name_fa) and ($editing_institute['name_en'] != $this->name_en)) {
             $validated = $this->validate([
                 'name_fa' => 'required|min:2',
-                'name_en' => 'required|unique:roles|min:3',
+                'name_en' => 'required|unique:role|min:3',
             ]);
             $validated['updated'] = j_d_stamp_en();
-            $editing_role->update($validated);
+            $editing_institute->update($validated);
         }
         $this->modal('edit-role')->close();
         Flux::toast(
@@ -95,32 +94,43 @@ new class extends Component {
         $this->editing_id = 0;
     }
 
-
-
 }; ?>
 
 <div>
     <div class="bg-zinc-100 dark:bg-zinc-600 dark:text-zinc-300 py-3 relative">
         <p class="font-semibold text-center">{{__('لیست نقشهای کاربری')}}</p>
-        <livewire:RoleManagement.role_create/>
+        <livewire:institute.create/>
     </div>
-    <flux:table :paginate="$this->roles" class="text-center">
+    <flux:table :paginate="$this->institutes" class="text-center">
         <flux:table.columns>
             <flux:table.column align="center" sortable :sorted="$sortBy === 'id'" :direction="$sortDirection"
                                wire:click="sort('id')">
                 {{__('#')}}
             </flux:table.column>
 
-            <flux:table.column align="center" sortable :sorted="$sortBy === 'name_fa'" :direction="$sortDirection"
-                               wire:click="sort('name_fa')">
-                {{__('عنوان فارسی')}}
+            <flux:table.column align="center" sortable :sorted="$sortBy === 'short_name'" :direction="$sortDirection"
+                               wire:click="sort('short_name')">
+                {{__('نام کوتاه')}}
             </flux:table.column>
 
 
-            <flux:table.column align="center" sortable :sorted="$sortBy === 'name_en'" :direction="$sortDirection"
-                               wire:click="sort('name_en')">
-                {{__('عنوان لاتین')}}
+            <flux:table.column align="center" sortable :sorted="$sortBy === 'full_name'" :direction="$sortDirection"
+                               wire:click="sort('full_name')">
+                {{__('نام کامل')}}
             </flux:table.column>
+
+            <flux:table.column align="center" sortable :sorted="$sortBy === 'abb'" :direction="$sortDirection"
+                               wire:click="sort('abb')">
+                {{__('نام اختصاری')}}
+            </flux:table.column>
+
+            <flux:table.column align="center" sortable :sorted="$sortBy === 'remain_credit'" :direction="$sortDirection"
+                               wire:click="sort('remain_credit')">
+                {{__('مانده اعتبار')}}
+            </flux:table.column>
+
+            <flux:table.column align="center">{{__('لوگو')}}</flux:table.column>
+
             <flux:table.column align="center" sortable :sorted="$sortBy === 'created'" :direction="$sortDirection"
                                wire:click="sort('created')">
                 {{__('زمان ثبت')}}
@@ -134,36 +144,39 @@ new class extends Component {
         </flux:table.columns>
 
         <flux:table.rows>
-            @foreach ($this->roles as $role)
+            @foreach ($this->institutes as $institute)
                 @php($ed = '')
-                @if($role->id == $editing_id)
+                @if($institute->id == $editing_id)
                     @php($ed = 'bg-amber-100')
                 @endif
 
-                <flux:table.row class="hover:bg-green-50 {{$ed}}" :key="$role->id">
-                    <flux:table.cell class="whitespace-nowrap">{{ $role->id }}</flux:table.cell>
-                    <flux:table.cell class="whitespace-nowrap">{{ $role->name_fa }}</flux:table.cell>
-                    <flux:table.cell class="whitespace-nowrap">{{ $role->name_en }}</flux:table.cell>
+                <flux:table.row class="hover:bg-green-50 {{$ed}}" :key="$institute->id">
+                    <flux:table.cell class="whitespace-nowrap">{{ $institute->id }}</flux:table.cell>
+                    <flux:table.cell class="whitespace-nowrap">{{ $institute->short_name }}</flux:table.cell>
+                    <flux:table.cell class="whitespace-nowrap">{{ $institute->full_name }}</flux:table.cell>
+                    <flux:table.cell class="whitespace-nowrap">{{ $institute->abb }}</flux:table.cell>
+                    <flux:table.cell class="whitespace-nowrap">{{ $institute->remain_credit }}</flux:table.cell>
+                    <flux:table.cell class="whitespace-nowrap">{{ $institute->logo_url }}</flux:table.cell>
                     <flux:table.cell class="whitespace-nowrap">
-                        {{substr($role['created'], 0, 10)}}
+                        {{substr($institute['created'], 0, 10)}}
                         <hr>
-                        {{substr($role['created'], 11, 5)}}
+                        {{substr($institute['created'], 11, 5)}}
 
                     </flux:table.cell>
                     <flux:table.cell class="whitespace-nowrap">
-                        {{substr($role['updated'], 0, 10)}}
-                        @if($role['updated'])
+                        {{substr($institute['updated'], 0, 10)}}
+                        @if($institute['updated'])
                             <hr>
                         @endif
-                        {{substr($role['updated'], 11, 5)}}
+                        {{substr($institute['updated'], 11, 5)}}
                     </flux:table.cell>
 
                     <flux:table.cell>
 
-                        <flux:button wire:click="edit({{$role}})" variant="ghost" size="sm" class="cursor-pointer">
+                        <flux:button wire:click="edit({{$institute}})" variant="ghost" size="sm" class="cursor-pointer">
                             <flux:icon.pencil-square variant="solid" class="text-amber-500 dark:text-amber-300 size-5"/>
                         </flux:button>
-                        <flux:button href="{{URL::signedRoute('show_role', ['role'=>$role->id])}}" variant="ghost"
+                        <flux:button href="{{URL::signedRoute('show_role', ['role'=>$institute->id])}}" variant="ghost"
                                      size="sm" class="cursor-pointer" wire:navigate>
                             <flux:icon.eye class="text-blue-500 size-5"/>
                         </flux:button>
@@ -175,7 +188,8 @@ new class extends Component {
     </flux:table>
 
     <!-- Edit Modal -->
-    <flux:modal @close="reset_edit" variant="flyout" position="left" name="edit-role" :show="$errors->isNotEmpty()" focusable class="w-80 md:w-96" :dismissible="false">
+    <flux:modal @close="reset_edit" variant="flyout" position="left" name="edit-role" :show="$errors->isNotEmpty()"
+                focusable class="w-80 md:w-96" :dismissible="false">
         <div class="space-y-6">
             <div>
                 <flux:heading size="lg">{{ __('فرم ویرایش نقش') }}</flux:heading>

@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             QuestionLevelSeeder::class,
             QuestionTypeSeeder::class,
             QuestionSeeder::class,
+            InstituteSeeder::class,
         ]);
     }
 }

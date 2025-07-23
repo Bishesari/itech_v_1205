@@ -22,7 +22,12 @@ Route::middleware(['auth'])->group(function () {
 require __DIR__.'/auth.php';
 
 Volt::route('questions', 'questions.list')->name('questions_list')->middleware('auth');
-Volt::route('roles', 'RoleManagement.roles')->name('roles')->middleware('auth');
-Volt::route('role/{role}/show', 'RoleManagement.role_show')->name('show_role')->middleware(['auth', 'signed']);
-Volt::route('permissions', 'RoleManagement.permissions')->name('permissions')->middleware('auth');
-Volt::route('permission/{permission}/show', 'RoleManagement.permission_show')->name('show_permission')->middleware(['auth', 'signed']);
+
+Volt::route('roles', 'role.index')->name('roles')->middleware('auth');
+Volt::route('role/{role}/show', 'role.show')->name('show_role')->middleware(['auth', 'signed']);
+
+
+Volt::route('permissions', 'permission.index')->name('permissions')->middleware('auth');
+Volt::route('permission/{permission}/show', 'permission.show')->name('show_permission')->middleware(['auth', 'signed']);
+
+Volt::route('institutes', 'institute.index')->name('institutes')->middleware('auth');

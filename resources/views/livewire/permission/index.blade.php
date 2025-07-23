@@ -61,14 +61,14 @@ new class extends Component {
 
         if (($editing_permission['name_fa'] != $this->name_fa) and ($editing_permission['name_en'] != $this->name_en)) {
             $validated = $this->validate([
-                'name_fa' => 'required|unique:roles|min:2',
-                'name_en' => 'required|unique:roles|min:3',
+                'name_fa' => 'required|unique:role|min:2',
+                'name_en' => 'required|unique:role|min:3',
             ]);
             $validated['updated'] = j_d_stamp_en();
             $editing_permission->update($validated);
         } elseif (($editing_permission['name_fa'] != $this->name_fa) and ($editing_permission['name_en'] == $this->name_en)) {
             $validated = $this->validate([
-                'name_fa' => 'required|unique:roles|min:2',
+                'name_fa' => 'required|unique:role|min:2',
                 'name_en' => 'required|min:3',
             ]);
             $validated['updated'] = j_d_stamp_en();
@@ -76,7 +76,7 @@ new class extends Component {
         } elseif (($editing_permission['name_fa'] == $this->name_fa) and ($editing_permission['name_en'] != $this->name_en)) {
             $validated = $this->validate([
                 'name_fa' => 'required|min:2',
-                'name_en' => 'required|unique:roles|min:3',
+                'name_en' => 'required|unique:role|min:3',
             ]);
             $validated['updated'] = j_d_stamp_en();
             $editing_permission->update($validated);
@@ -100,7 +100,7 @@ new class extends Component {
 <div>
     <div class="bg-zinc-100 dark:bg-zinc-600 dark:text-zinc-300 py-3 relative">
         <p class="font-semibold text-center">{{__('لیست مجوزها')}}</p>
-        <livewire:RoleManagement.permission_create/>
+        <livewire:permission.create/>
     </div>
     <flux:table :paginate="$this->permissions" class="text-center">
         <flux:table.columns>
