@@ -27,7 +27,7 @@ new class extends Component {
     }
 
     #[Computed]
-    #[On('Institute-created')]
+    #[On('institute-created')]
     public function institutes()
     {
         return Institute::query()
@@ -36,22 +36,27 @@ new class extends Component {
 
     }
 
-    #[On('Institute-created')]
+    #[On('institute-created')]
     public function reset_page(): void
     {
         $this->resetPage();
     }
 
-    public string $name_fa = '';
-    public string $name_en = '';
+
+    public string $short_name = '';
+    public string $full_name = '';
+    public string $abb = '';
+    public int $remain_credit;
 
     public int $editing_id = 0;
 
     public function edit(Institute $institute): void
     {
         $this->editing_id = $institute['id'];
-        $this->name_fa = $institute['name_fa'];
-        $this->name_en = $institute['name_en'];
+        $this->short_name = $institute['short_name'];
+        $this->full_name = $institute['full_name'];
+        $this->abb = $institute['abb'];
+        $this->remain_credit = $institute['remain_credit'];
         $this->modal('edit-institute')->show();
     }
 
@@ -59,7 +64,7 @@ new class extends Component {
     {
         $editing_institute = Institute::find($this->editing_id);
 
-        if (($editing_institute['name_fa'] != $this->name_fa) and ($editing_institute['name_en'] != $this->name_en)) {
+        if (($editing_institute['abb'] != $this->abb)) {
             $validated = $this->validate([
                 'name_fa' => 'required|unique:role|min:2',
                 'name_en' => 'required|unique:role|min:3',
@@ -188,18 +193,26 @@ new class extends Component {
     </flux:table>
 
     <!-- Edit Modal -->
-    <flux:modal @close="reset_edit" variant="flyout" position="left" name="edit-role" :show="$errors->isNotEmpty()"
-                focusable class="w-80 md:w-96" :dismissible="false">
+    <flux:modal @close="reset_edit" variant="flyout" position="left" name="edit-institute" :show="$errors->isNotEmpty()"
+                focusable :dismissible="false">
         <div class="space-y-6">
             <div>
-                <flux:heading size="lg">{{ __('فرم ویرایش نقش') }}</flux:heading>
-                <flux:text class="mt-2">{{ __('توجه کنید این نقش را قبلا تعریف نکرده باشید.') }}</flux:text>
+                <flux:heading size="lg">{{ __('ویرایش آموزشگاه') }}</flux:heading>
+                <flux:text class="mt-2">{{ __('اطلاعات مربوط به آموزشگاه را وارد نمایید.') }}</flux:text>
             </div>
-            <form wire:submit="update" class="flex flex-col gap-6">
-                <flux:input wire:model="name_fa" :label="__('عنوان فارسی')" type="text" class:input="text-center"
-                            maxlength="35" required autofocus/>
-                <flux:input wire:model="name_en" :label="__('عنوان لاتین')" type="text" class:input="text-center"
-                            maxlength="35" required style="direction:ltr"/>
+            <form wire:submit="update" class="flex flex-col gap-6" autocomplete="off">
+                <flux:input wire:model="short_name" :label="__('نام کوتاه فارسی')" type="text" class:input="text-center"
+                            maxlength="25" required autofocus/>
+
+                <flux:input wire:model="full_name" :label="__('نام کامل')" type="text" class:input="text-center"
+                            maxlength="50" required/>
+
+                <flux:input wire:model="abb" :label="__('علامت اختصاری')" type="text" class:input="text-center"
+                            maxlength="3" required style="direction:ltr"/>
+
+                <flux:input wire:model="remain_credit" :label="__('مانده اعتبار')" type="text" class:input="text-center"
+                            maxlength="5" required style="direction:ltr"/>
+
                 <div class="flex justify-between space-x-2 rtl:space-x-reverse flex-row-reverse">
                     <flux:button variant="primary" color="orange" type="submit"
                                  class="cursor-pointer">{{ __('ویرایش') }}</flux:button>

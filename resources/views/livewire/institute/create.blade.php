@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\Institute;
-use App\Models\Role;
 use Flux\Flux;
 use Livewire\Attributes\Validate;
 use Livewire\Volt\Component;
@@ -23,7 +22,7 @@ new class extends Component {
         Institute::create([
             'short_name' => $this->short_name,
             'full_name' => $this->full_name,
-            'abb' => $this->abb,
+            'abb' => strtoupper($this->abb),
             'remain_credit' => $this->remain_credit,
             'created' => j_d_stamp_en()
         ]);
@@ -54,15 +53,15 @@ new class extends Component {
                 <flux:heading size="lg">{{ __('درج آموزشگاه جدید') }}</flux:heading>
                 <flux:text class="mt-2">{{ __('اطلاعات مربوط به آموزشگاه را وارد نمایید.') }}</flux:text>
             </div>
-            <form wire:submit="create_institute" class="flex flex-col gap-6">
+            <form wire:submit="create_institute" class="flex flex-col gap-6" autocomplete="off">
                 <flux:input wire:model="short_name" :label="__('نام کوتاه فارسی')" type="text" class:input="text-center"
-                            maxlength="35" required autofocus/>
+                            maxlength="25" required autofocus/>
 
-                <flux:input wire:model="full_name" :label="__('عنوان لاتین')" type="text" class:input="text-center"
+                <flux:input wire:model="full_name" :label="__('نام کامل')" type="text" class:input="text-center"
                             maxlength="50" required/>
 
                 <flux:input wire:model="abb" :label="__('علامت اختصاری')" type="text" class:input="text-center"
-                            maxlength="50" required style="direction:ltr"/>
+                            maxlength="3" required style="direction:ltr"/>
 
                 <flux:input wire:model="remain_credit" :label="__('مانده اعتبار')" type="text" class:input="text-center"
                             maxlength="5" required style="direction:ltr"/>

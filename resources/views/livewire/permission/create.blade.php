@@ -47,7 +47,7 @@ new class extends Component {
                 <flux:heading size="lg" class="text-blue-500">{{ __('درج مجوز جدید') }}</flux:heading>
                 <flux:text class="mt-2 text-blue-400">{{ __('توجه کنید این مجوز را قبلا تعریف نکرده باشید.') }}</flux:text>
             </div>
-            <form wire:submit="create" class="flex flex-col gap-6">
+            <form wire:submit="create" class="flex flex-col gap-6" autocomplete="off">
                 <flux:input wire:model="name_fa" :label="__('عنوان فارسی')" type="text" class:input="text-center"
                             maxlength="35" required autofocus/>
                 <flux:input wire:model="name_en" :label="__('عنوان لاتین')" type="text" class:input="text-center"
