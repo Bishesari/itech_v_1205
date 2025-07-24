@@ -60,15 +60,15 @@ new class extends Component {
 
         if ( ($editing_role['name_fa'] != $this->name_fa) and ($editing_role['name_en'] != $this->name_en) ){
             $validated = $this->validate([
-                'name_fa' => 'required|unique:role|min:2',
-                'name_en' => 'required|unique:role|min:3',
+                'name_fa' => 'required|unique:roles|min:2',
+                'name_en' => 'required|unique:roles|min:3',
             ]);
             $validated['updated'] = j_d_stamp_en();
             $editing_role->update($validated);
         }
         elseif ( ($editing_role['name_fa'] != $this->name_fa) and ($editing_role['name_en'] == $this->name_en) ){
             $validated = $this->validate([
-                'name_fa' => 'required|unique:role|min:2',
+                'name_fa' => 'required|unique:roles|min:2',
                 'name_en' => 'required|min:3',
             ]);
             $validated['updated'] = j_d_stamp_en();
@@ -77,7 +77,7 @@ new class extends Component {
         elseif ( ($editing_role['name_fa'] == $this->name_fa) and ($editing_role['name_en'] != $this->name_en) ){
             $validated = $this->validate([
                 'name_fa' => 'required|min:2',
-                'name_en' => 'required|unique:role|min:3',
+                'name_en' => 'required|unique:roles|min:3',
             ]);
             $validated['updated'] = j_d_stamp_en();
             $editing_role->update($validated);
@@ -94,8 +94,6 @@ new class extends Component {
     {
         $this->editing_id = 0;
     }
-
-
 
 }; ?>
 

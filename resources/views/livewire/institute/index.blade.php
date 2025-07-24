@@ -65,31 +65,29 @@ new class extends Component {
         $editing_institute = Institute::find($this->editing_id);
 
         if (($editing_institute['abb'] != $this->abb)) {
+            $this->abb = strtoupper($this->abb);
             $validated = $this->validate([
-                'name_fa' => 'required|unique:role|min:2',
-                'name_en' => 'required|unique:role|min:3',
+                'short_name' => 'required|min:2',
+                'full_name' => 'required|min:3',
+                'abb' => 'required|unique:institutes|size:3',
+                'remain_credit' => 'required|max:5',
             ]);
             $validated['updated'] = j_d_stamp_en();
             $editing_institute->update($validated);
-        } elseif (($editing_institute['name_fa'] != $this->name_fa) and ($editing_institute['name_en'] == $this->name_en)) {
+        } else {
             $validated = $this->validate([
-                'name_fa' => 'required|unique:role|min:2',
-                'name_en' => 'required|min:3',
-            ]);
-            $validated['updated'] = j_d_stamp_en();
-            $editing_institute->update($validated);
-        } elseif (($editing_institute['name_fa'] == $this->name_fa) and ($editing_institute['name_en'] != $this->name_en)) {
-            $validated = $this->validate([
-                'name_fa' => 'required|min:2',
-                'name_en' => 'required|unique:role|min:3',
+                'short_name' => 'required|min:2',
+                'full_name' => 'required|min:3',
+                'abb' => 'required|size:3',
+                'remain_credit' => 'required|max:5',
             ]);
             $validated['updated'] = j_d_stamp_en();
             $editing_institute->update($validated);
         }
-        $this->modal('edit-role')->close();
+        $this->modal('edit-institute')->close();
         Flux::toast(
             heading: 'انجام شد.',
-            text: 'نقش کاربری با موفقیت ویرایش شد.',
+            text: 'اطلاعات آموزشگاه با موفقیت ویرایش شد.',
             variant: 'success'
         );
     }
