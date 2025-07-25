@@ -7,9 +7,9 @@ use Livewire\Volt\Component;
 
 new class extends Component {
 
-    #[Validate('required|unique:role|min:2')]
+    #[Validate('required|unique:permissions|min:2')]
     public string $name_fa = '';
-    #[Validate('required|unique:role|min:3')]
+    #[Validate('required|unique:permissions|min:3')]
     public string $name_en = '';
 
     public function create(): void

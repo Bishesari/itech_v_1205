@@ -61,14 +61,14 @@ new class extends Component {
 
         if (($editing_permission['name_fa'] != $this->name_fa) and ($editing_permission['name_en'] != $this->name_en)) {
             $validated = $this->validate([
-                'name_fa' => 'required|unique:role|min:2',
-                'name_en' => 'required|unique:role|min:3',
+                'name_fa' => 'required|unique:permissions|min:2',
+                'name_en' => 'required|unique:permissions|min:3',
             ]);
             $validated['updated'] = j_d_stamp_en();
             $editing_permission->update($validated);
         } elseif (($editing_permission['name_fa'] != $this->name_fa) and ($editing_permission['name_en'] == $this->name_en)) {
             $validated = $this->validate([
-                'name_fa' => 'required|unique:role|min:2',
+                'name_fa' => 'required|unique:permissions|min:2',
                 'name_en' => 'required|min:3',
             ]);
             $validated['updated'] = j_d_stamp_en();
@@ -76,7 +76,7 @@ new class extends Component {
         } elseif (($editing_permission['name_fa'] == $this->name_fa) and ($editing_permission['name_en'] != $this->name_en)) {
             $validated = $this->validate([
                 'name_fa' => 'required|min:2',
-                'name_en' => 'required|unique:role|min:3',
+                'name_en' => 'required|unique:permissions|min:3',
             ]);
             $validated['updated'] = j_d_stamp_en();
             $editing_permission->update($validated);

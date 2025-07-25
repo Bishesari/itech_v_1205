@@ -11,18 +11,19 @@ new class extends Component {
     public string $short_name = '';
     #[Validate('required|min:3')]
     public string $full_name = '';
-    #[Validate('required|min:3')]
+    #[Validate('required|unique:institutes|size:3')]
     public string $abb = '';
-    #[Validate('required')]
+    #[Validate('required|max:5')]
     public int $remain_credit = 1000;
 
     public function create_institute(): void
     {
+        $this->abb = strtoupper($this->abb);
         $this->validate();
         Institute::create([
             'short_name' => $this->short_name,
             'full_name' => $this->full_name,
-            'abb' => strtoupper($this->abb),
+            'abb' => $this->abb,
             'remain_credit' => $this->remain_credit,
             'created' => j_d_stamp_en()
         ]);
