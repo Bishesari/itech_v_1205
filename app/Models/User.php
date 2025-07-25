@@ -3,6 +3,7 @@
 namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -36,15 +37,19 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Mobile::class);
     }
+    public function instituteRoles():HasMany
+    {
+        return $this->hasMany(InstituteRoleUser::class);
+    }
 
-    public function roles(): BelongsToMany
-    {
-        return $this->belongsToMany(Role::class, 'institute_role_user')->withPivot('institute_id');
-    }
-    public function institutes(): BelongsToMany
-    {
-        return $this->belongsToMany(Institute::class, 'institute_role_user')->withPivot('role_id');
-    }
+//    public function roles(): BelongsToMany
+//    {
+//        return $this->belongsToMany(Role::class, 'institute_role_user')->withPivot('institute_id');
+//    }
+//    public function institutes(): BelongsToMany
+//    {
+//        return $this->belongsToMany(Institute::class, 'institute_role_user')->withPivot('role_id');
+//    }
 
 
 }
