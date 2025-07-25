@@ -33,3 +33,4 @@ Volt::route('permission/{permission}/show', 'permission.show')->name('show_permi
 Volt::route('institutes', 'institute.index')->name('institutes')->middleware('auth');
 
 Volt::route('users', 'user.index')->name('users')->middleware('auth');
+Volt::route('user/{user}/show', 'user.show')->name('show_user')->middleware(['auth', 'signed']);
