@@ -22,10 +22,16 @@ class User extends Authenticatable
 
     public function initials(): string
     {
-        return Str::of($this->profile->f_name_fa . '، ' . $this->profile->l_name_fa)
-            ->explode('، ')
-            ->map(fn(string $name) => Str::of($name)->substr(0, 1))
-            ->implode(' ');
+        if ($this->profile()->exists()) {
+            return Str::of($this->profile->f_name_fa . '، ' . $this->profile->l_name_fa)
+                ->explode('، ')
+                ->map(fn(string $name) => Str::of($name)->substr(0, 1))
+                ->implode(' ');
+        }
+        else{
+            return Str::of($this->user_name)->substr(0, 2);
+        }
+
     }
 
     public function profile(): HasOne

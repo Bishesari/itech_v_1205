@@ -16,10 +16,21 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        $user = User::create(['user_name' => 'Yasser', 'password' => '123456789', 'created' => j_d_stamp_en()]);
-        $user->profile()->create(['n_code' => '2063531218', 'f_name_fa' => 'یاسر', 'l_name_fa' => 'بیشه سری', 'created' => j_d_stamp_en()]);
-        $mobile = Mobile::create(['mobile_nu' => '09177755924', 'verified'=> '1', 'created' => j_d_stamp_en()]);
-        $user->mobiles()->attach($mobile['id'], ['created' => j_d_stamp_en()]);
-        //$user->role()->attach([ 1 => ['institute_id' => 1] ]);
+        $users = [
+            ['user_name' => 'Yasser', 'password' => '123456789'],
+            ['user_name' => 'Amin', 'password' => '123456789'],
+            ['user_name' => 'Amir', 'password' => '123456789'],
+            ['user_name' => 'Ali', 'password' => '123456789'],
+            ['user_name' => 'Sara', 'password' => '123456789'],
+            ['user_name' => 'Dara', 'password' => '123456789'],
+            ['user_name' => 'Mina', 'password' => '123456789'],
+        ];
+        foreach ($users as $data) {
+            User::create([
+                'user_name' => $data['user_name'],
+                'password' => $data['password'],
+                'created' => j_d_stamp_en(),
+            ]);
+        }
     }
 }
