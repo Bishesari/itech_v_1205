@@ -101,7 +101,7 @@ new class extends Component {
 
 <div>
     <div class="bg-zinc-100 dark:bg-zinc-600 dark:text-zinc-300 py-3 relative">
-        <p class="font-semibold text-center">{{__('لیست نقشهای کاربری')}}</p>
+        <p class="font-semibold text-center">{{__('لیست آموزشگاهها')}}</p>
         <livewire:institute.create/>
     </div>
     <flux:table :paginate="$this->institutes" class="text-center">
@@ -176,7 +176,7 @@ new class extends Component {
 
                     <flux:table.cell>
 
-                        <flux:button wire:click="edit({{$institute}})" variant="ghost" size="sm" class="cursor-pointer">
+                        <flux:button tooltip="ویرایش" wire:click="edit({{$institute}})" variant="ghost" size="sm" class="cursor-pointer">
                             <flux:icon.pencil-square variant="solid" class="text-amber-500 dark:text-amber-300 size-5"/>
                         </flux:button>
 {{--                        <flux:button href="{{URL::signedRoute('show_role', ['role'=>$institute->id])}}" variant="ghost"--}}
