@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Institute;
+use App\Models\InstituteRoleUser;
 use App\Models\Profile;
 use Livewire\Attributes\Locked;
 use Livewire\Volt\Component;
@@ -8,6 +9,7 @@ use Livewire\Volt\Component;
 new class extends Component {
     #[Locked]
     public Institute $institute;
+    public $user_id;
     public string $n_code;
     public string $f_name_fa;
     public string $l_name_fa;
@@ -16,16 +18,26 @@ new class extends Component {
 
     public function profile_existence(): void
     {
-        $profile =Profile::where('n_code', $this->n_code)->first();
+        $profile = Profile::where('n_code', $this->n_code)->first();
         if ($profile) {
+            $this->user_id = $profile->user->id;
             $this->f_name_fa = $profile['f_name_fa'];
             $this->l_name_fa = $profile['l_name_fa'];
-            foreach ($profile->user->mobiles as $mobile){
+            foreach ($profile->user->mobiles as $mobile) {
                 $this->mobiles[] = $mobile->mobile_nu;
             }
             $this->modal('create_originator')->close();
             $this->modal('create_originator_profile')->show();
         }
+    }
+
+    public function create_originator_role(): void
+    {
+        InstituteRoleUser::create([
+            'institute_id' => $this->institute->id,
+            'user_id' => $this->user_id,
+            'role_id' => '2'
+        ]);
     }
 
 
@@ -79,31 +91,30 @@ new class extends Component {
         </section>
 
 
-
-
         <flux:modal name="create_originator_profile" :show="$errors->isNotEmpty()" focusable class="w-80 md:w-96"
                     :dismissible="false">
             <div class="space-y-6">
                 <div>
                     <flux:heading size="lg">{{ __('اطلاعات پروفایل بازیابی شد.') }}</flux:heading>
-                    <flux:text class="mt-2">{{ __('اگر پروفایل موجود باشد، نمایش داده خواهد شد.') }}</flux:text>
+                    <flux:text class="mt-2">{{ __('امکان افزودن شماره موبایل وجود دارد.') }}</flux:text>
                 </div>
                 <form wire:submit="create_originator_role" class="flex flex-col gap-5" autocomplete="off">
                     <flux:input readonly wire:model="n_code" :label="__('کدملی:')" type="text" class:input="text-center"
                                 maxlength="10" style="direction:ltr"/>
-                    <flux:input wire:model="f_name_fa" :label="__('نام:')" type="text" class:input="text-center"
-                                maxlength="30" required autofocus/>
-                    <flux:input wire:model="l_name_fa" :label="__('نام خانوادگی:')" type="text" class:input="text-center"
+                    <flux:input readonly wire:model="f_name_fa" :label="__('نام:')" type="text"
+                                class:input="text-center"
+                                maxlength="30" required/>
+                    <flux:input readonly wire:model="l_name_fa" :label="__('نام خانوادگی:')" type="text"
+                                class:input="text-center"
                                 maxlength="40" required/>
                     <flux:input wire:model="mobile" :label="__('شماره موبایل:')" type="text" class:input="text-center"
-                                maxlength="11"/>
-                    <flux:separator text="شماره های موجود" />
+                                maxlength="11" autofocus/>
+                    <flux:separator text="شماره های موجود"/>
                     <div class="flex justify-around">
                         @foreach($mobiles as $mobile)
                             <flux:badge variant="pill">{{$mobile}}</flux:badge>
                         @endforeach
                     </div>
-
 
 
                     <div class="flex justify-between space-x-2 rtl:space-x-reverse flex-row-reverse">
@@ -117,8 +128,6 @@ new class extends Component {
             </div>
         </flux:modal>
     </div>
-
-
 
 
 </div>
