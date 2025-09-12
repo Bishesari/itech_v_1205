@@ -9,91 +9,44 @@ use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
 new #[Layout('components.layouts.auth')] class extends Component {
-    public string $name = '';
-    public string $email = '';
-    public string $password = '';
-    public string $password_confirmation = '';
+    public string $n_code = '';
+    public int $iranian = 1;
 
-    /**
-     * Handle an incoming registration request.
-     */
-    public function register(): void
+    public function check_n_code()
     {
-        $validated = $this->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
-            'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
-        ]);
 
-        $validated['password'] = Hash::make($validated['password']);
+        if ($this->iranian){
 
-        event(new Registered(($user = User::create($validated))));
+        }
 
-        Auth::login($user);
-
-        $this->redirectIntended(route('dashboard', absolute: false), navigate: true);
     }
+
+
 }; ?>
 
 <div class="flex flex-col gap-6">
-    <x-auth-header :title="__('Create an account')" :description="__('Enter your details below to create your account')" />
-
+    <x-auth-header :title="__('ایجاد حساب کاربری')" :description="__('برای شروع ثبت نام اطلاعات خواسته شده را وارد کنید.')" />
     <!-- Session Status -->
     <x-auth-session-status class="text-center" :status="session('status')" />
 
-    <form wire:submit="register" class="flex flex-col gap-6">
-        <!-- Name -->
-        <flux:input
-            wire:model="name"
-            :label="__('Name')"
-            type="text"
-            required
-            autofocus
-            autocomplete="name"
-            :placeholder="__('Full name')"
-        />
+    <form wire:submit="check_n_code" class="flex flex-col gap-6" autocomplete="off">
 
-        <!-- Email Address -->
-        <flux:input
-            wire:model="email"
-            :label="__('Email address')"
-            type="email"
-            required
-            autocomplete="email"
-            placeholder="email@example.com"
-        />
-
-        <!-- Password -->
-        <flux:input
-            wire:model="password"
-            :label="__('Password')"
-            type="password"
-            required
-            autocomplete="new-password"
-            :placeholder="__('Password')"
-            viewable
-        />
-
-        <!-- Confirm Password -->
-        <flux:input
-            wire:model="password_confirmation"
-            :label="__('Confirm password')"
-            type="password"
-            required
-            autocomplete="new-password"
-            :placeholder="__('Confirm password')"
-            viewable
-        />
+        <flux:radio.group wire:model="iranian" label="میلت" variant="cards" class="max-sm:flex-col">
+            <flux:radio value="1" label="ایرانی" />
+            <flux:radio value="0" label="اتباع خارجه"/>
+        </flux:radio.group>
+        <flux:input wire:model="n_code" :label="__('کدملی')" type="text" class:input="text-center"
+                    style="direction:ltr" maxlength="10" required autofocus/>
 
         <div class="flex items-center justify-end">
             <flux:button type="submit" variant="primary" class="w-full">
-                {{ __('Create account') }}
+                {{ __('ادامه') }}
             </flux:button>
         </div>
     </form>
 
     <div class="space-x-1 rtl:space-x-reverse text-center text-sm text-zinc-600 dark:text-zinc-400">
-        {{ __('Already have an account?') }}
-        <flux:link :href="route('login')" wire:navigate>{{ __('Log in') }}</flux:link>
+        {{ __('حساب کاربری داشته اید؟') }}
+        <flux:link :href="route('login')" wire:navigate>{{ __('وارد شوید') }}</flux:link>
     </div>
 </div>
