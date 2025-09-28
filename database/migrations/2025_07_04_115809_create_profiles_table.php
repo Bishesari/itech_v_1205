@@ -14,8 +14,14 @@ return new class extends Migration
         Schema::create('profiles', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->unique()->constrained()->onDelete('cascade');
-            $table->tinyInteger('nationality_id')->default(1)->unsigned();
-            $table->string('n_code', 15)->unique();
+            // نوع شناسه: national_id, foreigner_id, passport
+            $table->enum('identifier_type', ['national_id', 'foreigner_id', 'passport']);
+            // مقدار شناسه (کد ملی یا پاسپورت یا کد فراگیر)
+            $table->string('identifier_value');
+
+            // کشور فقط برای پاسپورت‌ها (ایرانی‌ها null می‌مونه)
+            $table->string('country_code', 3)->nullable();
+
             $table->boolean('gender')->nullable();
             $table->string('f_name_fa', 30)->nullable();
             $table->string('l_name_fa', 40)->nullable();
@@ -38,6 +44,9 @@ return new class extends Migration
             $table->string('image_url', 40)->nullable();
             $table->char('created', 19);
             $table->char('updated', 19)->nullable();
+
+            // برای جلوگیری از ثبت تکراری: ترکیب نوع + مقدار باید یکتا باشه
+            $table->unique(['identifier_type', 'identifier_value']);
         });
     }
 
