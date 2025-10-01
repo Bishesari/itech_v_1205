@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('profiles', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->unique()->constrained()->onDelete('cascade');
+
             // نوع شناسه: national_id, foreigner_id, passport
             $table->enum('identifier_type', ['national_id', 'foreigner_id', 'passport']);
             // مقدار شناسه (کد ملی یا پاسپورت یا کد فراگیر)

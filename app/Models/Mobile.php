@@ -8,8 +8,24 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Mobile extends Model
 {
     public $timestamps = false;
+    protected $fillable = ['mobile_nu', 'created', 'updated'];
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class);
+    }
+
+    public static function storeOrUpdate($mobile_nu)
+    {
+        $mobile = self::updateOrCreate(
+            ['mobile_nu' => $mobile_nu],
+            ['updated'   => j_d_stamp_en()]
+        );
+
+        if ($mobile->wasRecentlyCreated) {
+            $mobile->created = j_d_stamp_en();
+            $mobile->save();
+        }
+
+        return $mobile;
     }
 }
