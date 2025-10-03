@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('skill_requests', function (Blueprint $table) {
+        Schema::create('otp_logs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('institute_id')->constrained()->cascadeOnDelete();
-            //$table->foreignId('skill_requester_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('skill_standard_id')->constrained()->cascadeOnDelete();
-            $table->string('description', 150)->nullable();
+            $table->string('request_ip', 45)->index();
+            $table->string('n_code', 10)->index();
+            $table->string('mobile_nu', 11)->index();
             $table->char('created', 19);
             $table->char('updated', 19)->nullable();
+            $table->timestamps();
         });
     }
 
@@ -27,6 +27,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('skill_requests');
+        Schema::dropIfExists('otp_logs');
     }
+
 };

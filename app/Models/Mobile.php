@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Mobile extends Model
 {
-    public $timestamps = false;
     protected $fillable = ['mobile_nu', 'created', 'updated'];
     public function users(): BelongsToMany
     {
@@ -28,4 +27,17 @@ class Mobile extends Model
 
         return $mobile;
     }
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->created = j_d_stamp_en();
+        });
+
+        static::updating(function ($model) {
+            $model->updated = j_d_stamp_en();
+        });
+    }
+
 }

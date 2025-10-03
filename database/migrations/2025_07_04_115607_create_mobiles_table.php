@@ -15,11 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('mobile_nu', 11)->unique();
             $table->string('otp', 10)->nullable();
-            $table->string('otp_sent_time')->nullable();
+            $table->tinyInteger('otp_sent_qty')->default(0);
+            $table->unsignedInteger('otp_next_try_time')->default(0);
             $table->boolean('verified')->default(0);
-            $table->string('request_ip', 15)->nullable();
             $table->string('created', 19)->nullable();
             $table->string('updated', 19)->nullable();
+            $table->timestamps();
         });
     }
 

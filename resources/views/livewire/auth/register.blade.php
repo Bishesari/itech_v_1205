@@ -2,35 +2,105 @@
 
 use App\Models\Mobile;
 use App\Models\Profile;
-use App\Models\User;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
+use App\Rules\NCode;
+use App\Services\OtpService;
+use Carbon\Carbon;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
 new #[Layout('components.layouts.auth')] class extends Component {
-    public $n_code;
-    public $mobile;
-    public $mobile_nu;
+    public string $n_code;
+    public string $mobile;
+    public string $mobile_nu = '';
 
-    public function check_n_code()
+    protected function rules(): array
     {
-        //در هرصورت شماره موبایل ذخیره شود
+        return [
+            'n_code' => ['required', 'digits:10', new NCode],
+            'mobile_nu' => ['required', 'starts_with:09', 'digits:11']
+        ];
+    }
+
+
+    public function check_n_code(): void
+    {
+        $this->validate();
+        //در هرصورت بعد از اعتبارسنجی شماره موبایل ذخیره شود
         $this->mobile = Mobile::storeOrUpdate($this->mobile_nu);
         $profile = Profile::where('n_code', $this->n_code)->first();
-        if ($profile) {
-            // کاربر قبلاً ثبت‌نام کرده
-            return response()->json([
-                'status' => 'exists',
-                'message' => 'این کد ملی قبلاً ثبت شده. لطفاً وارد شوید.'
-            ]);
-        }
-        // open modal to send top
 
+        if ($profile) {
+            // کاربر قبلاً ثبت شده — پیام خطا/راهنمایی
+            $this->addError('n_code', 'این کد ملی قبلا ثبت شده است. لطفاً وارد شوید.');
+            return;
+        }
+
+        // قبل از بازکردن مودال بررسی می شود که آیا دکمه ارسال می تواند فعال باشد یا خیر؟
+        $this->can_send_otp();
+
+        // مودال ارسال پیامک باز می شود.
+        $this->modal('mobile_verify')->show();
+    }
+
+
+    public int $wait_seconds = 0;
+    public bool $enable_send = false;
+
+    public function can_send_otp(): bool
+    {
+        $mobile = Mobile::where('mobile_nu', $this->mobile_nu)->first();
+        if (time() - $mobile->otp_next_try_time >= 86400){
+            $mobile->otp_sent_qty = 0;
+            $mobile->save();
+        }
+        if (time() < $mobile->otp_next_try_time) {
+            $this->wait_seconds = $mobile->otp_next_try_time - time();
+            return false;
+        }
+        if ($mobile->otp_sent_qty >= 5) {
+            return false;
+        }
+
+        $this->wait_seconds = 0;
+        $this->enable_send = true;
+        return true;
+    }
+
+    public function sendOtp()
+    {
+        $mobile = Mobile::where('mobile_nu', $this->mobile_nu)->first();
+        if ($this->can_send_otp()) {
+            $otp = NumericOTP();
+            $mobile->otp = $otp;
+            $mobile->otp_sent_qty += 1;
+            $mobile->otp_next_try_time = time()+120;
+            $mobile->save();
+            $this->enable_send = false;
+            $this->wait_seconds = 120;
+        } else {
+            $this->enable_send = false;
+        }
+    }
+
+
+    public function refresh_wait(): void
+    {
+        if ($this->wait_seconds > 0)
+        {
+            $this->wait_seconds -= 1;
+            $this->enable_send = false;
+        }
+        else{
+            $this->wait_seconds = 0;
+            if ($this->can_send_otp())
+            {
+                $this->enable_send = true;
+            }
+
+        }
 
     }
+
 
 }; ?>
 
@@ -57,4 +127,29 @@ new #[Layout('components.layouts.auth')] class extends Component {
         {{ __('حساب کاربری داشته اید؟') }}
         <flux:link :href="route('login')" wire:navigate>{{ __('وارد شوید') }}</flux:link>
     </div>
+
+    <!--------- Mobile Verification Modal --------->
+    <flux:modal name="mobile_verify" class="md:w-96" :show="$errors->isNotEmpty()" focusable :dismissible="false">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">{{__('تایید شماره موبایل')}}</flux:heading>
+                <flux:text class="mt-2">{{__('کد پیامک شده به ')}} {{$mobile_nu}} {{__(' را وارد نمایید.')}}</flux:text>
+            </div>
+            <flux:input label="Name" placeholder="Your name"/>
+
+            <div wire:poll.visible.keep-alive.1s="refresh_wait">
+                Subscribers: {{ $wait_seconds }}
+            </div>
+
+            <div class="flex">
+                <flux:spacer/>
+                @if($enable_send)
+                    <flux:button wire:click="sendOtp" variant="primary">Otp Send</flux:button>
+                @else
+                    <flux:button variant="primary" disabled="true">wait</flux:button>
+                @endif
+
+            </div>
+        </div>
+    </flux:modal>
 </div>

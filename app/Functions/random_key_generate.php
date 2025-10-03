@@ -1,5 +1,5 @@
 <?php
-function NumericOTP($length): string
+function NumericOTP($length=6): string
 {
     $chs = '0123456789';
     $result = '';

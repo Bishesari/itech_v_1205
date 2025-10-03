@@ -18,7 +18,7 @@ return new class extends Migration
             // نوع شناسه: national_id, foreigner_id, passport
             $table->enum('identifier_type', ['national_id', 'foreigner_id', 'passport']);
             // مقدار شناسه (کد ملی یا پاسپورت یا کد فراگیر)
-            $table->string('identifier_value');
+            $table->string('n_code', 20);
 
             // کشور فقط برای پاسپورت‌ها (ایرانی‌ها null می‌مونه)
             $table->string('country_code', 3)->nullable();
@@ -47,7 +47,7 @@ return new class extends Migration
             $table->char('updated', 19)->nullable();
 
             // برای جلوگیری از ثبت تکراری: ترکیب نوع + مقدار باید یکتا باشه
-            $table->unique(['identifier_type', 'identifier_value']);
+            $table->unique(['identifier_type', 'n_code']);
         });
     }
 
