@@ -18,5 +18,6 @@
             </div>
         </div>
         @fluxScripts
+        <flux:toast />
     </body>
 </html>

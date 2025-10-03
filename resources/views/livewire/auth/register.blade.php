@@ -5,6 +5,7 @@ use App\Models\Profile;
 use App\Rules\NCode;
 use App\Services\OtpService;
 use Carbon\Carbon;
+use Flux\Flux;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
@@ -22,6 +23,8 @@ new #[Layout('components.layouts.auth')] class extends Component {
     }
 
 
+    public string $err_txt = '';
+    public string $err_head = '';
     public function check_n_code(): void
     {
         $this->validate();
@@ -37,9 +40,16 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
         // قبل از بازکردن مودال بررسی می شود که آیا دکمه ارسال می تواند فعال باشد یا خیر؟
         $this->can_send_otp();
-
         // مودال ارسال پیامک باز می شود.
         $this->modal('mobile_verify')->show();
+        if ($this->err_head) {
+            Flux::toast(
+                variant: 'danger',
+                heading: $this->err_head,
+                text: $this->err_txt,
+                position: "top center",
+            );
+        }
     }
 
 
@@ -49,7 +59,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
     public function can_send_otp(): bool
     {
         $mobile = Mobile::where('mobile_nu', $this->mobile_nu)->first();
-        if (time() - $mobile->otp_next_try_time >= 86400){
+        if (time() - $mobile->otp_next_try_time >= 86400) {
             $mobile->otp_sent_qty = 0;
             $mobile->save();
         }
@@ -58,6 +68,8 @@ new #[Layout('components.layouts.auth')] class extends Component {
             return false;
         }
         if ($mobile->otp_sent_qty >= 5) {
+            $this->err_head = 'محدودیت ارسال برای موبایل';
+            $this->err_txt = 'شماره همراه ' . $this->mobile_nu . ' تا 24 ساعت مسدود شد.';
             return false;
         }
 
@@ -66,14 +78,14 @@ new #[Layout('components.layouts.auth')] class extends Component {
         return true;
     }
 
-    public function sendOtp()
+    public function sendOtp(): void
     {
         $mobile = Mobile::where('mobile_nu', $this->mobile_nu)->first();
         if ($this->can_send_otp()) {
             $otp = NumericOTP();
             $mobile->otp = $otp;
             $mobile->otp_sent_qty += 1;
-            $mobile->otp_next_try_time = time()+120;
+            $mobile->otp_next_try_time = time() + 120;
             $mobile->save();
             $this->enable_send = false;
             $this->wait_seconds = 120;
@@ -85,20 +97,15 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
     public function refresh_wait(): void
     {
-        if ($this->wait_seconds > 0)
-        {
+        if ($this->wait_seconds > 0) {
             $this->wait_seconds -= 1;
             $this->enable_send = false;
-        }
-        else{
+        } else {
             $this->wait_seconds = 0;
-            if ($this->can_send_otp())
-            {
+            if ($this->can_send_otp()) {
                 $this->enable_send = true;
             }
-
         }
-
     }
 
 
@@ -135,21 +142,25 @@ new #[Layout('components.layouts.auth')] class extends Component {
                 <flux:heading size="lg">{{__('تایید شماره موبایل')}}</flux:heading>
                 <flux:text class="mt-2">{{__('کد پیامک شده به ')}} {{$mobile_nu}} {{__(' را وارد نمایید.')}}</flux:text>
             </div>
-            <flux:input label="Name" placeholder="Your name"/>
+            <form wire:submit="check_otp" class="flex flex-col gap-6" autocomplete="off">
+                <flux:input.group>
+                    <flux:input wire:model="u_otp" class:input="text-center font-bold" placeholder="کد پیامک شده"
+                                maxlength="6" required autofocus/>
+                    @if($enable_send)
+                        <flux:button wire:click="sendOtp" variant="primary" color="purple">{{__('ارسال پیامک')}}</flux:button>
+                    @else
+                        <flux:button variant="filled" disabled="true" class="w-1/3"
+                                     wire:poll.visible.keep-alive.1s="refresh_wait">
+                            {{ $wait_seconds }} {{__('ثانیه')}}
+                        </flux:button>
+                    @endif
+                </flux:input.group>
 
-            <div wire:poll.visible.keep-alive.1s="refresh_wait">
-                Subscribers: {{ $wait_seconds }}
-            </div>
-
-            <div class="flex">
-                <flux:spacer/>
-                @if($enable_send)
-                    <flux:button wire:click="sendOtp" variant="primary">Otp Send</flux:button>
-                @else
-                    <flux:button variant="primary" disabled="true">wait</flux:button>
-                @endif
-
-            </div>
+                <div class="flex">
+                    <flux:spacer/>
+                    <flux:button type="submit" variant="primary" color="sky" class="w-full">{{__('ادامه')}}</flux:button>
+                </div>
+            </form>
         </div>
     </flux:modal>
 </div>
