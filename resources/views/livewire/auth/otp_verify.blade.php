@@ -1,8 +1,6 @@
 <?php
 
-use App\Rules\NCode;
-use App\Services\ParsGreenSmsService;
-use Flux\Flux;
+use App\Services\ParsGreenService;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
@@ -11,18 +9,11 @@ class extends Component {
     public string $n_code;
     public string $mobile_nu;
 
-    public function mount(): void
+    public function otp_send(): void
     {
-        $this->send();
-    }
-
-    public function send()
-    {
-        $sms = new \App\Services\ParsGreenService();
-
-        $result = $sms->sendSms('09034336111', 'سلام از لاراول 👋');
-
-        return response()->json($result);
+        $sms = new ParsGreenService();
+        $otp = NumericOTP();
+        $sms->sendOtp($this->mobile_nu, $otp);
     }
 
 
@@ -50,9 +41,7 @@ class extends Component {
         <flux:link href="{{URL::SignedRoute('register', ['n_code'=>$n_code, 'mobile_nu'=>$mobile_nu])}}"
                    wire:navigate>{{ __('اصلاح کنید') }}</flux:link>
     </div>
-    <flux:button type="button" variant="primary" color="teal" class="w-full cursor-pointer" wire:click="send">
-        {{ __('hvshg') }}
+    <flux:button wire:click="otp_send" type="submit" variant="primary" color="blue" class="w-full cursor-pointer">
+        {{ __('ارسال پیامک') }}
     </flux:button>
-
-
 </div>

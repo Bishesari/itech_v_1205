@@ -36,7 +36,3 @@ Volt::route('institute/{institute}/originators', 'institute.originators')->name(
 Volt::route('users', 'user.index')->name('users')->middleware('auth');
 Volt::route('user/{user}/show', 'user.show')->name('show_user')->middleware(['auth', 'signed']);
 
-use App\Http\Controllers\SmsTestController;
-
-Route::get('/sms-test', [SmsTestController::class, 'send']);
-
