@@ -39,9 +39,9 @@ class User extends Authenticatable
         return $this->hasOne(Profile::class);
     }
 
-    public function mobiles(): BelongsToMany
+    public function contacts(): BelongsToMany
     {
-        return $this->belongsToMany(Mobile::class);
+        return $this->belongsToMany(Contact::class);
     }
     public function instituteRoles():HasMany
     {

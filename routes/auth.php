@@ -8,8 +8,8 @@ Route::middleware('guest')->group(function () {
     Volt::route('login', 'auth.login')
         ->name('login');
 
-    Volt::route('register', 'auth.register')
-        ->name('register');
+    Volt::route('register/{n_code}/{mobile_nu}', 'auth.register')->name('register')->middleware('signed');
+    Volt::route('register/otp_verify/{n_code}/{mobile_nu}', 'auth.otp_verify')->name('register.otp_verify')->middleware('signed');
 
     Volt::route('forgot-password', 'auth.forgot-password')
         ->name('password.request');

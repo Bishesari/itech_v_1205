@@ -107,7 +107,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
     @if (Route::has('register'))
         <div class="space-x-1 rtl:space-x-reverse text-center text-sm text-zinc-600 dark:text-zinc-400">
             {{ __('حساب کاربری ندارید؟') }}
-            <flux:link :href="route('register')" wire:navigate>{{ __('ثبت نام کنید.') }}</flux:link>
+            <flux:link href="{{URL::SignedRoute('register', ['n_code'=>0, 'mobile_nu'=>0])}}" wire:navigate>{{ __('ثبت نام کنید.') }}</flux:link>
         </div>
     @endif
 </div>
